@@ -5,6 +5,7 @@ const { ZcashClient } = require("./zcash-enhancements/zcash_rpc.cjs");
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "static")));
+app.get("/", (req, res) => res.redirect("/wallet.html"));
 
 // Zcash client — connects to zebrad + zkool
 const zcash = new ZcashClient({

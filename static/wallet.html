@@ -1,94 +1,659 @@
 <!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Zcash Wallet — Orchard/Halo2</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, system-ui, sans-serif;
+        background: #0a0a12;
+        color: #e0e0e0;
+        min-height: 100vh;
+      }
 
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      .navbar {
+        display: flex;
+        align-items: center;
+        padding: 12px 24px;
+        border-bottom: 1px solid #1a1a2e;
+      }
+      .navbar .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .navbar .logo span {
+        font-size: 14px;
+        font-weight: 800;
+        color: #f5b919;
+      }
+      .navbar .status {
+        margin-left: auto;
+        font-size: 11px;
+        color: #555;
+      }
+      .navbar .status.connected {
+        color: #4ade80;
+      }
+      .navbar .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 4px;
+      }
+      .navbar .dot.green {
+        background: #4ade80;
+      }
+      .navbar .dot.red {
+        background: #f87171;
+      }
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 24px;
+      }
 
-    <link href="./css/style.css" rel="stylesheet">
+      .card {
+        background: #0d0d18;
+        border: 1px solid #1a1a2e;
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 16px;
+      }
+      .card h2 {
+        font-size: 14px;
+        color: #888;
+        margin-bottom: 16px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
 
-    <title>Bitcoin Wallet</title>
-</head>
+      .balance-display {
+        text-align: center;
+        padding: 20px 0;
+      }
+      .balance-amount {
+        font-size: 48px;
+        font-weight: 800;
+        color: #f5b919;
+      }
+      .balance-label {
+        font-size: 13px;
+        color: #666;
+        margin-top: 4px;
+      }
+      .balance-pools {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        margin-top: 16px;
+      }
+      .pool {
+        text-align: center;
+        padding: 8px 16px;
+        background: #12121f;
+        border-radius: 8px;
+      }
+      .pool .amount {
+        font-size: 16px;
+        font-weight: 700;
+        color: #ccc;
+      }
+      .pool .name {
+        font-size: 10px;
+        color: #555;
+        margin-top: 2px;
+      }
 
-<body>
+      .address-box {
+        background: #08080f;
+        border: 1px solid #f5b919;
+        border-radius: 8px;
+        padding: 12px;
+        word-break: break-all;
+        font-family: monospace;
+        font-size: 11px;
+        color: #f5b919;
+        cursor: pointer;
+        position: relative;
+      }
+      .address-box:hover {
+        background: #0d0d18;
+      }
+      .address-box .copy-hint {
+        position: absolute;
+        top: 4px;
+        right: 8px;
+        font-size: 9px;
+        color: #555;
+        font-family: sans-serif;
+      }
+      .address-label {
+        font-size: 11px;
+        color: #555;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .address-label .tag {
+        background: #1a3a1a;
+        color: #4ade80;
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 9px;
+        font-weight: 700;
+      }
 
-    <div class="cover-container d-flex flex-column">
-        <!-- Nav Bar -->
-        <header class="masthead mb-auto">
-            <div class="inner">
-                <h3 class="masthead-brand">Blockgeeks</h3>
-                <nav class="nav nav-masthead justify-content-center">
-                    <a class="nav-link active" href="#">Wallet</a>
-                    <a class="nav-link" href="#">Explorer</a>
-                </nav>
-            </div>
-        </header>
+      .send-form {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .send-form label {
+        font-size: 11px;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .send-form input,
+      .send-form textarea {
+        background: #08080f;
+        border: 1px solid #1a1a2e;
+        border-radius: 8px;
+        padding: 10px 12px;
+        color: #e0e0e0;
+        font-family: monospace;
+        font-size: 13px;
+        outline: none;
+      }
+      .send-form input:focus,
+      .send-form textarea:focus {
+        border-color: #f5b919;
+      }
+      .send-form textarea {
+        resize: none;
+        height: 60px;
+      }
 
-        <!-- Main Wallet Area -->
-        <main role="main" class="inner cover">
+      .btn {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #f5b919;
+        color: #0a0a12;
+      }
+      .btn-primary:hover {
+        background: #e0a800;
+      }
+      .btn-primary:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .btn-secondary {
+        background: #1a1a2e;
+        color: #888;
+      }
+      .btn-secondary:hover {
+        background: #222;
+        color: #ccc;
+      }
 
-            <h1 class="cover-heading">Simple Wallet</h1>
-            <p class="lead">
-                <button id="create-wallet" class="btn btn-lg btn-secondary">Create New Wallet</button>
-                <button id="import-wallet" class="btn btn-lg btn-secondary">Import Old Wallet</button>
-            </p>
+      .tx-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .tx-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        background: #08080f;
+        border-radius: 8px;
+        font-size: 12px;
+      }
+      .tx-item .txid {
+        font-family: monospace;
+        color: #666;
+        max-width: 200px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .tx-item .value {
+        font-weight: 700;
+      }
+      .tx-item .value.positive {
+        color: #4ade80;
+      }
+      .tx-item .value.negative {
+        color: #f87171;
+      }
 
-            <!-- Dynamically Generated Content -->
-            <div class="container">
+      .notes-list {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .note-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #08080f;
+        border-radius: 8px;
+      }
+      .note-item .pool-tag {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-weight: 700;
+      }
+      .note-item .pool-tag.orchard {
+        background: #f5b919;
+        color: #0a0a12;
+      }
+      .note-item .pool-tag.sapling {
+        background: #1a1a2e;
+        color: #888;
+      }
 
-                <!-- Alert Banner -->
-                <div id="alert-msg"></div>
+      .loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 20px;
+        color: #555;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid #333;
+        border-top-color: #f5b919;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
 
-                <!-- New Wallet Form -->
-                <div id="new-wallet" style="display: none">
-                    <form id="new-wallet-form">
-                        <div class="form-group">
-                            <input type="radio" name="network" value="mainnet" checked> Main Net <br>
-                            <input type="radio" name="network" value="testnet"> Test Net
-                        </div>
-                        <button type="submit" class="btn btn-secondary">Create</button>
-                    </form>
-                </div>
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #1a3a1a;
+        border: 1px solid #4ade80;
+        color: #4ade80;
+        padding: 12px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        display: none;
+        z-index: 100;
+      }
+      .toast.error {
+        background: #3a1a1a;
+        border-color: #f87171;
+        color: #f87171;
+      }
+      .toast.show {
+        display: block;
+      }
 
-                <!-- Import Wallet Form -->
-                <div id="old-wallet" style="display: none">
-                    <form id="old-wallet-form">
-                        <div class="form-group">
-                            <input type="text" name="cipher" placeholder="Enter your private key" class="form-control">
-                        </div>
-                        <button type="submit" class="btn btn-secondary">Unlock</button>
-                    </form>
-                </div>
+      .tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 16px;
+      }
+      .tab {
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        background: transparent;
+        border: none;
+        color: #555;
+      }
+      .tab.active {
+        background: #f5b919;
+        color: #0a0a12;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar">
+      <div class="logo">
+        <span>Zcash Wallet</span>
+      </div>
+      <div class="status" id="status">
+        <span class="dot red"></span> Connecting...
+      </div>
+    </nav>
 
-                <!-- Area for wallet info and sending TX -->
-                <div id="output-area"></div>
+    <div class="container">
+      <!-- Balance -->
+      <div class="card">
+        <div class="balance-display" id="balance-section">
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading...
+          </div>
+        </div>
+      </div>
 
-            </div>
-        </main>
+      <!-- Addresses -->
+      <div class="card">
+        <h2>Receive</h2>
+        <div id="addresses-section">
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading addresses...
+          </div>
+        </div>
+      </div>
 
+      <!-- Send -->
+      <div class="card">
+        <h2>Send (Shielded)</h2>
+        <div class="send-form">
+          <div>
+            <label>To Address</label>
+            <input
+              type="text"
+              id="send-to"
+              placeholder="u1... or zs1... or t1..."
+            />
+          </div>
+          <div>
+            <label>Amount (ZEC)</label>
+            <input type="text" id="send-amount" placeholder="0.001" />
+          </div>
+          <div>
+            <label>Encrypted Memo (optional)</label>
+            <textarea
+              id="send-memo"
+              placeholder="Only the recipient can read this..."
+            ></textarea>
+          </div>
+          <button
+            class="btn btn-primary"
+            id="send-btn"
+            onclick="sendShielded()"
+          >
+            Send via Orchard (Halo2)
+          </button>
+        </div>
+      </div>
 
-        <footer class="mastfoot mt-auto">
-            <div class="inner">
-                <p>Bitcoin 101 course app by <a href="https://blockgeeks.com">blockgeeks</a>.</p>
-            </div>
-        </footer>
+      <!-- Notes & Transactions -->
+      <div class="card">
+        <div class="tabs">
+          <button class="tab active" onclick="showTab('notes', this)">
+            Shielded Notes
+          </button>
+          <button class="tab" onclick="showTab('txs', this)">
+            Transactions
+          </button>
+        </div>
+        <div id="notes-tab">
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading...
+          </div>
+        </div>
+        <div id="txs-tab" style="display: none">
+          <div class="loading">
+            <div class="spinner"></div>
+            Loading...
+          </div>
+        </div>
+      </div>
     </div>
 
+    <div class="toast" id="toast"></div>
 
+    <script>
+      let accountId = 1;
 
+      function showToast(msg, isError = false) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = "toast show" + (isError ? " error" : "");
+        setTimeout(() => (t.className = "toast"), 3000);
+      }
 
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+      function showTab(name, el) {
+        document.getElementById("notes-tab").style.display =
+          name === "notes" ? "block" : "none";
+        document.getElementById("txs-tab").style.display =
+          name === "txs" ? "block" : "none";
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.remove("active"));
+        el.classList.add("active");
+      }
 
-    <!-- Our own scripts -->
-    <script type="text/javascript" src="./scripts/bundle.js"></script>
-    <script type="text/javascript" src="./scripts/wallet.js"></script>
-</body>
+      async function init() {
+        // Check chain
+        try {
+          const chain = await fetch("/api/chain").then((r) => r.json());
+          document.getElementById("status").innerHTML =
+            '<span class="dot green"></span> ' +
+            chain.chain +
+            "net · Block " +
+            chain.blocks.toLocaleString();
+          document.getElementById("status").className = "status connected";
+        } catch {
+          document.getElementById("status").innerHTML =
+            '<span class="dot red"></span> Node offline';
+          return;
+        }
 
+        // Get or create account
+        try {
+          const acc = await fetch("/api/account", { method: "POST" }).then(
+            (r) => r.json(),
+          );
+          accountId = acc.accountId;
+        } catch (e) {
+          showToast("Failed to get account: " + e.message, true);
+        }
+
+        loadBalance();
+        loadAddresses();
+        loadNotes();
+        loadTransactions();
+      }
+
+      async function loadBalance() {
+        try {
+          const bal = await fetch("/api/balance/" + accountId).then((r) =>
+            r.json(),
+          );
+          const total = parseFloat(bal.total || "0");
+          document.getElementById("balance-section").innerHTML = `
+      <div class="balance-amount">${total.toFixed(4)}</div>
+      <div class="balance-label">ZEC Total Balance</div>
+      <div class="balance-pools">
+        <div class="pool"><div class="amount">${parseFloat(bal.orchard || "0").toFixed(4)}</div><div class="name">Orchard</div></div>
+        <div class="pool"><div class="amount">${parseFloat(bal.sapling || "0").toFixed(4)}</div><div class="name">Sapling</div></div>
+        <div class="pool"><div class="amount">${parseFloat(bal.transparent || "0").toFixed(4)}</div><div class="name">Transparent</div></div>
+      </div>
+    `;
+        } catch {
+          document.getElementById("balance-section").innerHTML =
+            '<div class="balance-amount">—</div><div class="balance-label">Unable to load</div>';
+        }
+      }
+
+      async function loadAddresses() {
+        try {
+          const addrs = await fetch("/api/addresses/" + accountId).then((r) =>
+            r.json(),
+          );
+          let html = "";
+          if (addrs.ua) {
+            html +=
+              '<div style="margin-bottom:12px"><div class="address-label">Unified Address <span class="tag">RECOMMENDED</span></div>';
+            html +=
+              '<div class="address-box" onclick="copyAddr(this)">' +
+              addrs.ua +
+              '<span class="copy-hint">click to copy</span></div></div>';
+          }
+          if (addrs.orchard) {
+            html +=
+              '<div style="margin-bottom:12px"><div class="address-label">Orchard <span class="tag">HALO2</span></div>';
+            html +=
+              '<div class="address-box" onclick="copyAddr(this)">' +
+              addrs.orchard +
+              '<span class="copy-hint">click to copy</span></div></div>';
+          }
+          if (addrs.transparent) {
+            html += '<div><div class="address-label">Transparent</div>';
+            html +=
+              '<div class="address-box" style="border-color:#1a1a2e;color:#888" onclick="copyAddr(this)">' +
+              addrs.transparent +
+              '<span class="copy-hint">click to copy</span></div></div>';
+          }
+          html +=
+            '<button class="btn btn-secondary" style="margin-top:12px;width:100%" onclick="newAddresses()">Generate New Addresses</button>';
+          document.getElementById("addresses-section").innerHTML = html;
+        } catch {
+          document.getElementById("addresses-section").innerHTML =
+            '<div style="color:#555">Unable to load addresses</div>';
+        }
+      }
+
+      async function loadNotes() {
+        try {
+          const notes = await fetch("/api/notes/" + accountId).then((r) =>
+            r.json(),
+          );
+          if (!notes.length) {
+            document.getElementById("notes-tab").innerHTML =
+              '<div style="color:#444;text-align:center;padding:20px">No shielded notes yet</div>';
+            return;
+          }
+          let html = '<div class="notes-list">';
+          for (const n of notes) {
+            const pool = n.pool === 2 ? "orchard" : "sapling";
+            html += `<div class="note-item">
+        <span class="pool-tag ${pool}">${pool.toUpperCase()}</span>
+        <span style="font-family:monospace;font-size:14px;font-weight:700">${parseFloat(n.value).toFixed(4)} ZEC</span>
+      </div>`;
+          }
+          html += "</div>";
+          document.getElementById("notes-tab").innerHTML = html;
+        } catch {
+          document.getElementById("notes-tab").innerHTML =
+            '<div style="color:#444">Unable to load</div>';
+        }
+      }
+
+      async function loadTransactions() {
+        try {
+          const txs = await fetch("/api/transactions/" + accountId).then((r) =>
+            r.json(),
+          );
+          if (!txs.length) {
+            document.getElementById("txs-tab").innerHTML =
+              '<div style="color:#444;text-align:center;padding:20px">No transactions yet</div>';
+            return;
+          }
+          let html = '<div class="tx-list">';
+          for (const tx of txs.slice(0, 20)) {
+            const val = parseFloat(tx.value);
+            const cls = val >= 0 ? "positive" : "negative";
+            html += `<div class="tx-item">
+        <div><div class="txid">${tx.txid}</div><div style="font-size:10px;color:#444">Block ${tx.height}</div></div>
+        <div class="value ${cls}">${val >= 0 ? "+" : ""}${val.toFixed(4)} ZEC</div>
+      </div>`;
+          }
+          html += "</div>";
+          document.getElementById("txs-tab").innerHTML = html;
+        } catch {
+          document.getElementById("txs-tab").innerHTML =
+            '<div style="color:#444">Unable to load</div>';
+        }
+      }
+
+      function copyAddr(el) {
+        const text = el.textContent.replace("click to copy", "").trim();
+        navigator.clipboard.writeText(text);
+        showToast("Address copied!");
+      }
+
+      async function newAddresses() {
+        try {
+          await fetch("/api/addresses/" + accountId + "/new", {
+            method: "POST",
+          });
+          loadAddresses();
+          showToast("New addresses generated!");
+        } catch (e) {
+          showToast("Failed: " + e.message, true);
+        }
+      }
+
+      async function sendShielded() {
+        const to = document.getElementById("send-to").value.trim();
+        const amount = document.getElementById("send-amount").value.trim();
+        const memo = document.getElementById("send-memo").value.trim();
+
+        if (!to || !amount) {
+          showToast("Enter address and amount", true);
+          return;
+        }
+
+        const btn = document.getElementById("send-btn");
+        btn.disabled = true;
+        btn.textContent = "Generating Halo2 proof...";
+
+        try {
+          const res = await fetch("/api/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ accountId, to, amount, memo, srcPools: 4 }),
+          }).then((r) => r.json());
+
+          if (res.error) throw new Error(res.error);
+
+          showToast("Sent! txid: " + (res.txid || "").slice(0, 16) + "...");
+          document.getElementById("send-to").value = "";
+          document.getElementById("send-amount").value = "";
+          document.getElementById("send-memo").value = "";
+
+          // Refresh
+          setTimeout(() => {
+            loadBalance();
+            loadNotes();
+            loadTransactions();
+          }, 3000);
+        } catch (e) {
+          showToast("Send failed: " + e.message, true);
+        }
+
+        btn.disabled = false;
+        btn.textContent = "Send via Orchard (Halo2)";
+      }
+
+      init();
+    </script>
+  </body>
 </html>

@@ -144,10 +144,10 @@ class ZkoolWallet {
    */
   sync(accountId) {
     return this._query(
-      `mutation Synchronize($idAccounts: [Int!]!) {
-        synchronize(idAccounts: $idAccounts)
+      `mutation Synchronize($idAccount: Int!) {
+        synchronize(idAccount: $idAccount)
       }`,
-      { idAccounts: [accountId] },
+      { accountId },
     );
   }
 
@@ -167,7 +167,7 @@ class ZkoolWallet {
           total
         }
       }`,
-      { idAccount: accountId },
+      { accountId },
     );
   }
 
@@ -187,7 +187,7 @@ class ZkoolWallet {
           orchard
         }
       }`,
-      { idAccount: accountId, pools },
+      { accountId, pools },
     );
   }
 
@@ -202,7 +202,7 @@ class ZkoolWallet {
           orchard
         }
       }`,
-      { idAccount: accountId },
+      { accountId },
     );
   }
 
@@ -224,7 +224,7 @@ class ZkoolWallet {
       `mutation Pay($idAccount: Int!, $recipients: [RecipientInput!]!, $srcPools: Int!) {
         pay(idAccount: $idAccount, recipients: $recipients, srcPools: $srcPools)
       }`,
-      { idAccount: accountId, recipients, srcPools },
+      { accountId, recipients, srcPools },
     );
   }
 
@@ -242,7 +242,7 @@ class ZkoolWallet {
           spent
         }
       }`,
-      { idAccount: accountId },
+      { accountId },
     );
   }
 
@@ -258,7 +258,7 @@ class ZkoolWallet {
           pool
         }
       }`,
-      { idAccount: accountId },
+      { accountId },
     );
   }
 }

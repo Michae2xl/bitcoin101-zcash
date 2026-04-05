@@ -9,12 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "request": "^2.83.0",
-    "get-random-values": "^1.2.0",
-    "ecurve": "^1.0.6",
     "bigi": "^1.1.0",
     "bs58": "^4.0.1",
-    "eccrypto": "^1.0.3"
+    "eccrypto": "^1.0.3",
+    "ecurve": "^1.0.6",
+    "express": "^5.2.1",
+    "get-random-values": "^1.2.0",
+    "request": "^2.83.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

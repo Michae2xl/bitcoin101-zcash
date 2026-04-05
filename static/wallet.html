@@ -1679,7 +1679,7 @@
             const pool = n.pool === 2 ? "orchard" : "sapling";
             html += `<div class="note-item">
               <span><span class="note-pool-dot ${pool}"></span><span class="pool-tag ${pool}">${pool.toUpperCase()}</span></span>
-              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#ccc">${parseFloat(n.value).toFixed(4)} ZEC</span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#00ff41">+${parseFloat(n.value).toFixed(4)} ZEC</span>
             </div>`;
           }
           html += "</div>";
@@ -1703,10 +1703,11 @@
           let html = '<div class="tx-list">';
           for (const tx of txs.slice(0, 20)) {
             const val = parseFloat(tx.value);
-            const cls = val >= 0 ? "positive" : "negative";
+            const color = val >= 0 ? "#00ff41" : "#f87171";
+            const sign = val >= 0 ? "+" : "";
             html += `<div class="tx-item">
               <div><div class="txid">${tx.txid}</div><div style="font-size:8px;color:#333;margin-top:1px;letter-spacing:1px">BLOCK ${tx.height}</div></div>
-              <div class="value ${cls}">${val >= 0 ? "+" : ""}${val.toFixed(4)} ZEC</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:${color}">${sign}${val.toFixed(4)} ZEC</div>
             </div>`;
           }
           html += "</div>";

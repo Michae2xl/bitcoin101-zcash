@@ -10,29 +10,190 @@
         padding: 0;
         box-sizing: border-box;
       }
+
       body {
         font-family: -apple-system, system-ui, sans-serif;
         background: #0a0a12;
         color: #e0e0e0;
         min-height: 100vh;
+        overflow-x: hidden;
+        cursor: none;
       }
 
+      /* ── Custom Cursor ── */
+      .custom-cursor {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        background: #f5b919;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        mix-blend-mode: screen;
+        transition: transform 0.1s ease;
+      }
+
+      /* ── Cursor Trail ── */
+      .cursor-trail {
+        position: fixed;
+        width: 6px;
+        height: 6px;
+        background: #f5b919;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9998;
+        opacity: 0;
+        transition: opacity 0.4s ease;
+      }
+
+      /* ── Particle Background ── */
+      .particles-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      /* ── Navbar ── */
       .navbar {
+        position: relative;
+        z-index: 10;
         display: flex;
         align-items: center;
-        padding: 12px 24px;
-        border-bottom: 1px solid #1a1a2e;
+        padding: 16px 24px;
+        border-bottom: 1px solid rgba(245, 185, 25, 0.08);
+        backdrop-filter: blur(12px);
+        background: rgba(10, 10, 18, 0.7);
       }
       .navbar .logo {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 12px;
       }
-      .navbar .logo span {
-        font-size: 14px;
+
+      /* ── Eyes ── */
+      .eyes-container {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .eye {
+        width: 32px;
+        height: 32px;
+        background: radial-gradient(circle, #1a1a2e 60%, #0d0d18 100%);
+        border: 2px solid rgba(245, 185, 25, 0.3);
+        border-radius: 50%;
+        position: relative;
+        overflow: hidden;
+      }
+      .eye .pupil {
+        width: 10px;
+        height: 10px;
+        background: #f5b919;
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        transition: transform 0.08s ease-out;
+        box-shadow: 0 0 8px rgba(245, 185, 25, 0.6);
+      }
+      .eye .pupil::after {
+        content: "";
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #fff;
+        border-radius: 50%;
+        top: 1px;
+        left: 1px;
+      }
+
+      /* ── Glitch Title ── */
+      .glitch-title {
+        font-size: 15px;
         font-weight: 800;
         color: #f5b919;
+        position: relative;
+        display: inline-block;
+        letter-spacing: 1px;
       }
+      .glitch-title::before,
+      .glitch-title::after {
+        content: attr(data-text);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
+      .glitch-title::before {
+        color: #ff006e;
+        z-index: -1;
+      }
+      .glitch-title::after {
+        color: #00f5d4;
+        z-index: -1;
+      }
+      .glitch-title.glitching::before {
+        animation: glitch-1 0.3s steps(2) forwards;
+        opacity: 0.8;
+      }
+      .glitch-title.glitching::after {
+        animation: glitch-2 0.3s steps(2) forwards;
+        opacity: 0.8;
+      }
+      @keyframes glitch-1 {
+        0% {
+          clip-path: inset(20% 0 60% 0);
+          transform: translate(-3px, -1px);
+        }
+        25% {
+          clip-path: inset(50% 0 20% 0);
+          transform: translate(3px, 1px);
+        }
+        50% {
+          clip-path: inset(10% 0 70% 0);
+          transform: translate(-2px, 2px);
+        }
+        75% {
+          clip-path: inset(60% 0 10% 0);
+          transform: translate(2px, -2px);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: translate(0);
+          opacity: 0;
+        }
+      }
+      @keyframes glitch-2 {
+        0% {
+          clip-path: inset(60% 0 20% 0);
+          transform: translate(3px, 1px);
+        }
+        25% {
+          clip-path: inset(20% 0 50% 0);
+          transform: translate(-3px, -1px);
+        }
+        50% {
+          clip-path: inset(70% 0 10% 0);
+          transform: translate(2px, -2px);
+        }
+        75% {
+          clip-path: inset(10% 0 60% 0);
+          transform: translate(-2px, 2px);
+        }
+        100% {
+          clip-path: inset(0 0 0 0);
+          transform: translate(0);
+          opacity: 0;
+        }
+      }
+
       .navbar .status {
         margin-left: auto;
         font-size: 11px;
@@ -50,57 +211,202 @@
       }
       .navbar .dot.green {
         background: #4ade80;
+        box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
       }
       .navbar .dot.red {
         background: #f87171;
+        box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
       }
 
+      /* ── Container ── */
       .container {
-        max-width: 600px;
+        max-width: 620px;
         margin: 0 auto;
         padding: 24px;
+        position: relative;
+        z-index: 10;
       }
 
+      /* ── Card with 3D tilt ── */
       .card {
-        background: #0d0d18;
-        border: 1px solid #1a1a2e;
-        border-radius: 12px;
-        padding: 24px;
-        margin-bottom: 16px;
+        background: rgba(13, 13, 24, 0.8);
+        border: 1px solid rgba(245, 185, 25, 0.06);
+        border-radius: 16px;
+        padding: 28px;
+        margin-bottom: 20px;
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(8px);
+        transform-style: preserve-3d;
+        transition:
+          transform 0.15s ease-out,
+          box-shadow 0.15s ease-out,
+          border-color 0.3s;
+        will-change: transform;
+      }
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+          600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+          rgba(245, 185, 25, 0.04),
+          transparent 40%
+        );
+        pointer-events: none;
+        z-index: 0;
+      }
+      .card:hover {
+        border-color: rgba(245, 185, 25, 0.15);
+        box-shadow: 0 8px 40px rgba(245, 185, 25, 0.06);
+      }
+      .card > * {
+        position: relative;
+        z-index: 1;
       }
       .card h2 {
-        font-size: 14px;
-        color: #888;
-        margin-bottom: 16px;
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 18px;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 2px;
       }
 
+      /* ── Shield Icon ── */
+      .shield-icon {
+        position: fixed;
+        bottom: 40px;
+        left: 40px;
+        z-index: 5;
+        opacity: 0.12;
+        pointer-events: none;
+      }
+      .shield-icon svg {
+        width: 120px;
+        height: 140px;
+        filter: drop-shadow(0 0 30px rgba(245, 185, 25, 0.3));
+        animation: shield-pulse 4s ease-in-out infinite;
+      }
+      @keyframes shield-pulse {
+        0%,
+        100% {
+          opacity: 0.12;
+          filter: drop-shadow(0 0 20px rgba(245, 185, 25, 0.2));
+        }
+        50% {
+          opacity: 0.2;
+          filter: drop-shadow(0 0 40px rgba(245, 185, 25, 0.5));
+        }
+      }
+
+      /* ── Morphing Blob ── */
+      .blob-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 300px;
+        height: 300px;
+        z-index: 0;
+        pointer-events: none;
+      }
+      .morphing-blob {
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(
+          ellipse,
+          rgba(245, 185, 25, 0.12) 0%,
+          transparent 70%
+        );
+        border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+        animation: morph 12s ease-in-out infinite;
+        filter: blur(40px);
+      }
+      @keyframes morph {
+        0% {
+          border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+          transform: rotate(0deg) scale(1);
+        }
+        25% {
+          border-radius: 55% 45% 40% 60% / 45% 55% 45% 55%;
+          transform: rotate(90deg) scale(1.1);
+        }
+        50% {
+          border-radius: 60% 40% 45% 55% / 40% 60% 55% 45%;
+          transform: rotate(180deg) scale(1);
+        }
+        75% {
+          border-radius: 45% 55% 60% 40% / 60% 45% 40% 60%;
+          transform: rotate(270deg) scale(1.1);
+        }
+        100% {
+          border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
+          transform: rotate(360deg) scale(1);
+        }
+      }
+
+      /* ── Balance ── */
       .balance-display {
         text-align: center;
-        padding: 20px 0;
+        padding: 24px 0;
+        position: relative;
       }
       .balance-amount {
-        font-size: 48px;
+        font-size: 52px;
         font-weight: 800;
         color: #f5b919;
+        font-variant-numeric: tabular-nums;
+        text-shadow: 0 0 40px rgba(245, 185, 25, 0.3);
+        letter-spacing: -1px;
+      }
+      .balance-amount .digit {
+        display: inline-block;
+        animation: digit-reveal 0.6s ease-out forwards;
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      @keyframes digit-reveal {
+        0% {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
       .balance-label {
-        font-size: 13px;
-        color: #666;
-        margin-top: 4px;
+        font-size: 12px;
+        color: #555;
+        margin-top: 8px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
       }
       .balance-pools {
         display: flex;
         gap: 16px;
         justify-content: center;
-        margin-top: 16px;
+        margin-top: 20px;
       }
       .pool {
         text-align: center;
-        padding: 8px 16px;
-        background: #12121f;
-        border-radius: 8px;
+        padding: 10px 18px;
+        background: rgba(18, 18, 31, 0.6);
+        border-radius: 10px;
+        border: 1px solid rgba(245, 185, 25, 0.05);
+        transition:
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .pool:hover {
+        border-color: rgba(245, 185, 25, 0.15);
+        background: rgba(18, 18, 31, 0.9);
       }
       .pool .amount {
         font-size: 16px;
@@ -110,107 +416,239 @@
       .pool .name {
         font-size: 10px;
         color: #555;
-        margin-top: 2px;
+        margin-top: 4px;
+        letter-spacing: 1px;
       }
 
+      /* ── Address ── */
       .address-box {
-        background: #08080f;
-        border: 1px solid #f5b919;
-        border-radius: 8px;
-        padding: 12px;
+        background: rgba(8, 8, 15, 0.8);
+        border: 1px solid rgba(245, 185, 25, 0.3);
+        border-radius: 10px;
+        padding: 14px;
         word-break: break-all;
-        font-family: monospace;
+        font-family: "SF Mono", "Fira Code", monospace;
         font-size: 11px;
         color: #f5b919;
         cursor: pointer;
         position: relative;
+        transition: all 0.3s ease;
+        overflow: hidden;
+      }
+      .address-box::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(245, 185, 25, 0.05),
+          transparent
+        );
+        transition: left 0.5s ease;
+      }
+      .address-box:hover::after {
+        left: 100%;
       }
       .address-box:hover {
-        background: #0d0d18;
+        background: rgba(13, 13, 24, 0.9);
+        box-shadow: 0 0 20px rgba(245, 185, 25, 0.08);
+        border-color: rgba(245, 185, 25, 0.5);
       }
       .address-box .copy-hint {
         position: absolute;
-        top: 4px;
-        right: 8px;
+        top: 6px;
+        right: 10px;
         font-size: 9px;
-        color: #555;
+        color: #444;
         font-family: sans-serif;
+        transition: color 0.3s;
+      }
+      .address-box:hover .copy-hint {
+        color: #888;
       }
       .address-label {
         font-size: 11px;
         color: #555;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
       }
       .address-label .tag {
-        background: #1a3a1a;
+        background: rgba(26, 58, 26, 0.8);
         color: #4ade80;
-        padding: 1px 6px;
+        padding: 2px 8px;
         border-radius: 4px;
         font-size: 9px;
         font-weight: 700;
+        letter-spacing: 0.5px;
       }
 
+      /* ── Send Form ── */
       .send-form {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 14px;
       }
       .send-form label {
-        font-size: 11px;
-        color: #888;
+        font-size: 10px;
+        color: #666;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 1.5px;
+        margin-bottom: 4px;
+        display: block;
       }
       .send-form input,
       .send-form textarea {
-        background: #08080f;
-        border: 1px solid #1a1a2e;
-        border-radius: 8px;
-        padding: 10px 12px;
+        background: rgba(8, 8, 15, 0.8);
+        border: 1px solid rgba(26, 26, 46, 0.8);
+        border-radius: 10px;
+        padding: 12px 14px;
         color: #e0e0e0;
-        font-family: monospace;
+        font-family: "SF Mono", "Fira Code", monospace;
         font-size: 13px;
         outline: none;
+        transition:
+          border-color 0.3s,
+          box-shadow 0.3s;
+        width: 100%;
       }
       .send-form input:focus,
       .send-form textarea:focus {
-        border-color: #f5b919;
+        border-color: rgba(245, 185, 25, 0.5);
+        box-shadow: 0 0 20px rgba(245, 185, 25, 0.08);
       }
       .send-form textarea {
         resize: none;
-        height: 60px;
+        height: 64px;
       }
 
+      /* ── Buttons ── */
       .btn {
-        padding: 12px 20px;
+        padding: 14px 24px;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 14px;
         font-weight: 700;
         cursor: pointer;
-        transition: all 0.2s;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
       }
       .btn-primary {
-        background: #f5b919;
+        background: linear-gradient(135deg, #f5b919 0%, #e8a317 100%);
         color: #0a0a12;
+        letter-spacing: 0.5px;
       }
       .btn-primary:hover {
-        background: #e0a800;
+        box-shadow: 0 4px 30px rgba(245, 185, 25, 0.3);
+        transform: translateY(-1px);
+      }
+      .btn-primary:active {
+        transform: translateY(0);
       }
       .btn-primary:disabled {
         opacity: 0.3;
         cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
       }
       .btn-secondary {
-        background: #1a1a2e;
-        color: #888;
+        background: rgba(26, 26, 46, 0.6);
+        color: #777;
+        border: 1px solid rgba(26, 26, 46, 0.8);
       }
       .btn-secondary:hover {
-        background: #222;
-        color: #ccc;
+        background: rgba(34, 34, 54, 0.8);
+        color: #bbb;
+        border-color: rgba(245, 185, 25, 0.15);
+      }
+
+      /* ── Send Shockwave ── */
+      .shockwave-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 1000;
+        pointer-events: none;
+        display: none;
+      }
+      .shockwave-overlay.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .shockwave-ring {
+        position: absolute;
+        border: 2px solid rgba(245, 185, 25, 0.6);
+        border-radius: 50%;
+        animation: shockwave-expand 1.5s ease-out forwards;
+        opacity: 0;
+      }
+      @keyframes shockwave-expand {
+        0% {
+          width: 10px;
+          height: 10px;
+          opacity: 0.8;
+        }
+        100% {
+          width: 600px;
+          height: 600px;
+          opacity: 0;
+        }
+      }
+      .shockwave-text {
+        position: relative;
+        z-index: 1;
+        font-size: 14px;
+        font-weight: 700;
+        color: #f5b919;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        animation: proof-pulse 1s ease-in-out infinite;
+      }
+      @keyframes proof-pulse {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+          text-shadow: 0 0 20px rgba(245, 185, 25, 0.5);
+        }
+      }
+
+      /* ── Transactions & Notes ── */
+      .tabs {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 18px;
+      }
+      .tab {
+        padding: 8px 18px;
+        border-radius: 8px;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        background: transparent;
+        border: 1px solid transparent;
+        color: #555;
+        transition: all 0.3s;
+      }
+      .tab:hover {
+        color: #888;
+        border-color: rgba(245, 185, 25, 0.1);
+      }
+      .tab.active {
+        background: linear-gradient(135deg, #f5b919 0%, #e8a317 100%);
+        color: #0a0a12;
+        border-color: transparent;
       }
 
       .tx-list {
@@ -221,20 +659,28 @@
       .tx-item {
         display: flex;
         justify-content: space-between;
-        padding: 10px 12px;
-        background: #08080f;
-        border-radius: 8px;
+        align-items: center;
+        padding: 12px 14px;
+        background: rgba(8, 8, 15, 0.6);
+        border-radius: 10px;
         font-size: 12px;
+        border: 1px solid transparent;
+        transition: all 0.3s;
+      }
+      .tx-item:hover {
+        border-color: rgba(245, 185, 25, 0.08);
+        background: rgba(13, 13, 24, 0.8);
       }
       .tx-item .txid {
-        font-family: monospace;
-        color: #666;
+        font-family: "SF Mono", "Fira Code", monospace;
+        color: #555;
         max-width: 200px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
       .tx-item .value {
         font-weight: 700;
+        font-variant-numeric: tabular-nums;
       }
       .tx-item .value.positive {
         color: #4ade80;
@@ -246,43 +692,51 @@
       .notes-list {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
       }
       .note-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 12px;
-        background: #08080f;
-        border-radius: 8px;
+        padding: 10px 14px;
+        background: rgba(8, 8, 15, 0.6);
+        border-radius: 10px;
+        border: 1px solid transparent;
+        transition: all 0.3s;
+      }
+      .note-item:hover {
+        border-color: rgba(245, 185, 25, 0.08);
       }
       .note-item .pool-tag {
         font-size: 10px;
-        padding: 2px 8px;
-        border-radius: 4px;
+        padding: 3px 10px;
+        border-radius: 6px;
         font-weight: 700;
+        letter-spacing: 0.5px;
       }
       .note-item .pool-tag.orchard {
-        background: #f5b919;
+        background: linear-gradient(135deg, #f5b919, #e8a317);
         color: #0a0a12;
       }
       .note-item .pool-tag.sapling {
-        background: #1a1a2e;
+        background: rgba(26, 26, 46, 0.8);
         color: #888;
       }
 
+      /* ── Loading ── */
       .loading {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 20px;
-        color: #555;
+        gap: 10px;
+        padding: 24px;
+        color: #444;
+        font-size: 13px;
       }
       .spinner {
         width: 16px;
         height: 16px;
-        border: 2px solid #333;
+        border: 2px solid #222;
         border-top-color: #f5b919;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
@@ -293,53 +747,105 @@
         }
       }
 
+      /* ── Toast ── */
       .toast {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #1a3a1a;
+        bottom: 24px;
+        right: 24px;
+        background: rgba(26, 58, 26, 0.9);
         border: 1px solid #4ade80;
         color: #4ade80;
-        padding: 12px 20px;
-        border-radius: 8px;
+        padding: 14px 24px;
+        border-radius: 12px;
         font-size: 13px;
         display: none;
-        z-index: 100;
+        z-index: 2000;
+        backdrop-filter: blur(12px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        animation: toast-in 0.3s ease-out;
       }
       .toast.error {
-        background: #3a1a1a;
+        background: rgba(58, 26, 26, 0.9);
         border-color: #f87171;
         color: #f87171;
       }
       .toast.show {
         display: block;
       }
+      @keyframes toast-in {
+        0% {
+          transform: translateY(20px);
+          opacity: 0;
+        }
+        100% {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
 
-      .tabs {
-        display: flex;
-        gap: 4px;
-        margin-bottom: 16px;
+      /* ── Scrollbar ── */
+      ::-webkit-scrollbar {
+        width: 6px;
       }
-      .tab {
-        padding: 8px 16px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
+      ::-webkit-scrollbar-track {
         background: transparent;
-        border: none;
-        color: #555;
       }
-      .tab.active {
-        background: #f5b919;
-        color: #0a0a12;
+      ::-webkit-scrollbar-thumb {
+        background: rgba(245, 185, 25, 0.15);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(245, 185, 25, 0.3);
       }
     </style>
   </head>
   <body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor" id="custom-cursor"></div>
+
+    <!-- Cursor Trail -->
+    <div id="cursor-trail-container"></div>
+
+    <!-- Particle Background -->
+    <canvas class="particles-canvas" id="particles"></canvas>
+
+    <!-- Shield Icon -->
+    <div class="shield-icon">
+      <svg viewBox="0 0 100 120" fill="none">
+        <path
+          d="M50 5 L90 25 L90 65 C90 90 50 115 50 115 C50 115 10 90 10 65 L10 25 Z"
+          stroke="#f5b919"
+          stroke-width="1.5"
+          fill="rgba(245,185,25,0.03)"
+        />
+        <path
+          d="M50 20 L75 33 L75 60 C75 78 50 95 50 95 C50 95 25 78 25 60 L25 33 Z"
+          stroke="rgba(245,185,25,0.3)"
+          stroke-width="0.5"
+          fill="none"
+        />
+      </svg>
+    </div>
+
+    <!-- Shockwave Overlay -->
+    <div class="shockwave-overlay" id="shockwave-overlay">
+      <div class="shockwave-text">Generating Halo2 proof...</div>
+    </div>
+
+    <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
-        <span>Zcash Wallet</span>
+        <div class="eyes-container">
+          <div class="eye" id="eye-left">
+            <div class="pupil" id="pupil-left"></div>
+          </div>
+          <div class="eye" id="eye-right">
+            <div class="pupil" id="pupil-right"></div>
+          </div>
+        </div>
+        <span class="glitch-title" data-text="Zcash Wallet" id="glitch-title"
+          >Zcash Wallet</span
+        >
       </div>
       <div class="status" id="status">
         <span class="dot red"></span> Connecting...
@@ -348,8 +854,11 @@
 
     <div class="container">
       <!-- Balance -->
-      <div class="card">
+      <div class="card" data-tilt>
         <div class="balance-display" id="balance-section">
+          <div class="blob-container">
+            <div class="morphing-blob"></div>
+          </div>
           <div class="loading">
             <div class="spinner"></div>
             Loading...
@@ -358,7 +867,7 @@
       </div>
 
       <!-- Addresses -->
-      <div class="card">
+      <div class="card" data-tilt>
         <h2>Receive</h2>
         <div id="addresses-section">
           <div class="loading">
@@ -369,7 +878,7 @@
       </div>
 
       <!-- Send -->
-      <div class="card">
+      <div class="card" data-tilt>
         <h2>Send (Shielded)</h2>
         <div class="send-form">
           <div>
@@ -402,7 +911,7 @@
       </div>
 
       <!-- Notes & Transactions -->
-      <div class="card">
+      <div class="card" data-tilt>
         <div class="tabs">
           <button class="tab active" onclick="showTab('notes', this)">
             Shielded Notes
@@ -429,6 +938,234 @@
     <div class="toast" id="toast"></div>
 
     <script>
+      /* ════════════════════════════════════════════
+         VISUAL EFFECTS
+         ════════════════════════════════════════════ */
+
+      let mouseX = 0,
+        mouseY = 0;
+
+      // ── Particles ──
+      (function initParticles() {
+        const canvas = document.getElementById("particles");
+        const ctx = canvas.getContext("2d");
+        let particles = [];
+        const COUNT = 60;
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        for (let i = 0; i < COUNT; i++) {
+          particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            r: Math.random() * 2 + 0.5,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.3,
+            o: Math.random() * 0.15 + 0.03,
+          });
+        }
+
+        function draw() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (const p of particles) {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0) p.x = canvas.width;
+            if (p.x > canvas.width) p.x = 0;
+            if (p.y < 0) p.y = canvas.height;
+            if (p.y > canvas.height) p.y = 0;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(245, 185, 25, ${p.o})`;
+            ctx.fill();
+          }
+          requestAnimationFrame(draw);
+        }
+        draw();
+      })();
+
+      // ── Custom Cursor & Trail ──
+      const cursorEl = document.getElementById("custom-cursor");
+      const trailContainer = document.getElementById("cursor-trail-container");
+      const TRAIL_COUNT = 12;
+      const trailDots = [];
+
+      for (let i = 0; i < TRAIL_COUNT; i++) {
+        const dot = document.createElement("div");
+        dot.className = "cursor-trail";
+        trailContainer.appendChild(dot);
+        trailDots.push({ el: dot, x: 0, y: 0 });
+      }
+
+      document.addEventListener("mousemove", (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+      });
+
+      (function animateCursor() {
+        cursorEl.style.left = mouseX - 6 + "px";
+        cursorEl.style.top = mouseY - 6 + "px";
+
+        let prevX = mouseX,
+          prevY = mouseY;
+        for (let i = 0; i < trailDots.length; i++) {
+          const d = trailDots[i];
+          d.x += (prevX - d.x) * 0.3;
+          d.y += (prevY - d.y) * 0.3;
+          d.el.style.left = d.x - 3 + "px";
+          d.el.style.top = d.y - 3 + "px";
+          const dist = Math.hypot(mouseX - d.x, mouseY - d.y);
+          d.el.style.opacity = Math.min(0.4, dist * 0.01);
+          prevX = d.x;
+          prevY = d.y;
+        }
+
+        requestAnimationFrame(animateCursor);
+      })();
+
+      // ── Eyes Follow Mouse ──
+      function updateEyes() {
+        const eyes = [
+          {
+            eye: document.getElementById("eye-left"),
+            pupil: document.getElementById("pupil-left"),
+          },
+          {
+            eye: document.getElementById("eye-right"),
+            pupil: document.getElementById("pupil-right"),
+          },
+        ];
+
+        for (const { eye, pupil } of eyes) {
+          const rect = eye.getBoundingClientRect();
+          const cx = rect.left + rect.width / 2;
+          const cy = rect.top + rect.height / 2;
+          const dx = mouseX - cx;
+          const dy = mouseY - cy;
+          const angle = Math.atan2(dy, dx);
+          const dist = Math.min(6, Math.hypot(dx, dy) * 0.02);
+          const px = Math.cos(angle) * dist;
+          const py = Math.sin(angle) * dist;
+          pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
+        }
+        requestAnimationFrame(updateEyes);
+      }
+      updateEyes();
+
+      // ── Glitch Effect ──
+      function triggerGlitch() {
+        const el = document.getElementById("glitch-title");
+        el.classList.add("glitching");
+        setTimeout(() => el.classList.remove("glitching"), 300);
+        setTimeout(triggerGlitch, 5000 + Math.random() * 3000);
+      }
+      setTimeout(triggerGlitch, 2000);
+
+      // ── Card 3D Tilt ──
+      document.querySelectorAll("[data-tilt]").forEach((card) => {
+        card.addEventListener("mousemove", (e) => {
+          const rect = card.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          const rotateX = ((y - centerY) / centerY) * -3;
+          const rotateY = ((x - centerX) / centerX) * 3;
+          card.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+          card.style.setProperty("--mouse-x", x + "px");
+          card.style.setProperty("--mouse-y", y + "px");
+        });
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "perspective(800px) rotateX(0) rotateY(0)";
+        });
+      });
+
+      // ── Balance Digit Cascade ──
+      function cascadeDigits(container, text) {
+        container.innerHTML = "";
+        for (let i = 0; i < text.length; i++) {
+          const span = document.createElement("span");
+          span.className = "digit";
+          span.style.animationDelay = i * 0.05 + "s";
+          span.textContent = text[i];
+
+          // Slot machine effect: show random chars first
+          const chars = "0123456789.";
+          let count = 0;
+          const maxIterations = 6 + Math.floor(Math.random() * 4);
+          const interval = setInterval(() => {
+            if (count < maxIterations) {
+              span.textContent =
+                chars[Math.floor(Math.random() * chars.length)];
+              count++;
+            } else {
+              span.textContent = text[i];
+              clearInterval(interval);
+            }
+          }, 40);
+
+          container.appendChild(span);
+        }
+      }
+
+      // ── Address Decryption Effect ──
+      function decryptEffect(el) {
+        const original = el.getAttribute("data-addr");
+        if (!original) return;
+        const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+        let iteration = 0;
+        const interval = setInterval(() => {
+          el.childNodes[0].textContent = original
+            .split("")
+            .map((char, idx) => {
+              if (idx < iteration) return char;
+              return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join("");
+          iteration += Math.ceil(original.length / 10);
+          if (iteration >= original.length) {
+            el.childNodes[0].textContent = original;
+            clearInterval(interval);
+          }
+        }, 30);
+      }
+
+      // ── Shockwave Animation ──
+      function showShockwave() {
+        const overlay = document.getElementById("shockwave-overlay");
+        overlay.classList.add("active");
+
+        // Remove old rings
+        overlay.querySelectorAll(".shockwave-ring").forEach((r) => r.remove());
+
+        for (let i = 0; i < 5; i++) {
+          setTimeout(() => {
+            const ring = document.createElement("div");
+            ring.className = "shockwave-ring";
+            ring.style.left = "50%";
+            ring.style.top = "50%";
+            ring.style.marginLeft = "-5px";
+            ring.style.marginTop = "-5px";
+            overlay.appendChild(ring);
+            setTimeout(() => ring.remove(), 1500);
+          }, i * 300);
+        }
+      }
+
+      function hideShockwave() {
+        document.getElementById("shockwave-overlay").classList.remove("active");
+      }
+
+      /* ════════════════════════════════════════════
+         WALLET LOGIC (unchanged API calls)
+         ════════════════════════════════════════════ */
+
       let accountId = 1;
 
       function showToast(msg, isError = false) {
@@ -456,7 +1193,7 @@
           document.getElementById("status").innerHTML =
             '<span class="dot green"></span> ' +
             chain.chain +
-            "net · Block " +
+            "net \u00B7 Block " +
             chain.blocks.toLocaleString();
           document.getElementById("status").className = "status connected";
         } catch {
@@ -487,18 +1224,24 @@
             r.json(),
           );
           const total = parseFloat(bal.total || "0");
-          document.getElementById("balance-section").innerHTML = `
-      <div class="balance-amount">${total.toFixed(4)}</div>
-      <div class="balance-label">ZEC Total Balance</div>
-      <div class="balance-pools">
-        <div class="pool"><div class="amount">${parseFloat(bal.orchard || "0").toFixed(4)}</div><div class="name">Orchard</div></div>
-        <div class="pool"><div class="amount">${parseFloat(bal.sapling || "0").toFixed(4)}</div><div class="name">Sapling</div></div>
-        <div class="pool"><div class="amount">${parseFloat(bal.transparent || "0").toFixed(4)}</div><div class="name">Transparent</div></div>
-      </div>
-    `;
+          const section = document.getElementById("balance-section");
+          section.innerHTML = `
+            <div class="blob-container"><div class="morphing-blob"></div></div>
+            <div class="balance-amount" id="balance-digits"></div>
+            <div class="balance-label">ZEC Total Balance</div>
+            <div class="balance-pools">
+              <div class="pool"><div class="amount">${parseFloat(bal.orchard || "0").toFixed(4)}</div><div class="name">Orchard</div></div>
+              <div class="pool"><div class="amount">${parseFloat(bal.sapling || "0").toFixed(4)}</div><div class="name">Sapling</div></div>
+              <div class="pool"><div class="amount">${parseFloat(bal.transparent || "0").toFixed(4)}</div><div class="name">Transparent</div></div>
+            </div>
+          `;
+          cascadeDigits(
+            document.getElementById("balance-digits"),
+            total.toFixed(4),
+          );
         } catch {
           document.getElementById("balance-section").innerHTML =
-            '<div class="balance-amount">—</div><div class="balance-label">Unable to load</div>';
+            '<div class="blob-container"><div class="morphing-blob"></div></div><div class="balance-amount">\u2014</div><div class="balance-label">Unable to load</div>';
         }
       }
 
@@ -510,33 +1253,39 @@
           let html = "";
           if (addrs.ua) {
             html +=
-              '<div style="margin-bottom:12px"><div class="address-label">Unified Address <span class="tag">RECOMMENDED</span></div>';
+              '<div style="margin-bottom:14px"><div class="address-label">Unified Address <span class="tag">RECOMMENDED</span></div>';
             html +=
-              '<div class="address-box" onclick="copyAddr(this)">' +
+              '<div class="address-box" data-addr="' +
               addrs.ua +
-              '<span class="copy-hint">click to copy</span></div></div>';
+              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span>' +
+              addrs.ua +
+              '</span><span class="copy-hint">click to copy</span></div></div>';
           }
           if (addrs.orchard) {
             html +=
-              '<div style="margin-bottom:12px"><div class="address-label">Orchard <span class="tag">HALO2</span></div>';
+              '<div style="margin-bottom:14px"><div class="address-label">Orchard <span class="tag">HALO2</span></div>';
             html +=
-              '<div class="address-box" onclick="copyAddr(this)">' +
+              '<div class="address-box" data-addr="' +
               addrs.orchard +
-              '<span class="copy-hint">click to copy</span></div></div>';
+              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span>' +
+              addrs.orchard +
+              '</span><span class="copy-hint">click to copy</span></div></div>';
           }
           if (addrs.transparent) {
             html += '<div><div class="address-label">Transparent</div>';
             html +=
-              '<div class="address-box" style="border-color:#1a1a2e;color:#888" onclick="copyAddr(this)">' +
+              '<div class="address-box" style="border-color:rgba(26,26,46,0.8);color:#888" data-addr="' +
               addrs.transparent +
-              '<span class="copy-hint">click to copy</span></div></div>';
+              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span>' +
+              addrs.transparent +
+              '</span><span class="copy-hint">click to copy</span></div></div>';
           }
           html +=
-            '<button class="btn btn-secondary" style="margin-top:12px;width:100%" onclick="newAddresses()">Generate New Addresses</button>';
+            '<button class="btn btn-secondary" style="margin-top:14px;width:100%" onclick="newAddresses()">Generate New Addresses</button>';
           document.getElementById("addresses-section").innerHTML = html;
         } catch {
           document.getElementById("addresses-section").innerHTML =
-            '<div style="color:#555">Unable to load addresses</div>';
+            '<div style="color:#444">Unable to load addresses</div>';
         }
       }
 
@@ -547,22 +1296,22 @@
           );
           if (!notes.length) {
             document.getElementById("notes-tab").innerHTML =
-              '<div style="color:#444;text-align:center;padding:20px">No shielded notes yet</div>';
+              '<div style="color:#333;text-align:center;padding:24px;font-size:13px">No shielded notes yet</div>';
             return;
           }
           let html = '<div class="notes-list">';
           for (const n of notes) {
             const pool = n.pool === 2 ? "orchard" : "sapling";
             html += `<div class="note-item">
-        <span class="pool-tag ${pool}">${pool.toUpperCase()}</span>
-        <span style="font-family:monospace;font-size:14px;font-weight:700">${parseFloat(n.value).toFixed(4)} ZEC</span>
-      </div>`;
+              <span class="pool-tag ${pool}">${pool.toUpperCase()}</span>
+              <span style="font-family:'SF Mono',monospace;font-size:14px;font-weight:700">${parseFloat(n.value).toFixed(4)} ZEC</span>
+            </div>`;
           }
           html += "</div>";
           document.getElementById("notes-tab").innerHTML = html;
         } catch {
           document.getElementById("notes-tab").innerHTML =
-            '<div style="color:#444">Unable to load</div>';
+            '<div style="color:#333">Unable to load</div>';
         }
       }
 
@@ -573,7 +1322,7 @@
           );
           if (!txs.length) {
             document.getElementById("txs-tab").innerHTML =
-              '<div style="color:#444;text-align:center;padding:20px">No transactions yet</div>';
+              '<div style="color:#333;text-align:center;padding:24px;font-size:13px">No transactions yet</div>';
             return;
           }
           let html = '<div class="tx-list">';
@@ -581,20 +1330,22 @@
             const val = parseFloat(tx.value);
             const cls = val >= 0 ? "positive" : "negative";
             html += `<div class="tx-item">
-        <div><div class="txid">${tx.txid}</div><div style="font-size:10px;color:#444">Block ${tx.height}</div></div>
-        <div class="value ${cls}">${val >= 0 ? "+" : ""}${val.toFixed(4)} ZEC</div>
-      </div>`;
+              <div><div class="txid">${tx.txid}</div><div style="font-size:10px;color:#333;margin-top:2px">Block ${tx.height}</div></div>
+              <div class="value ${cls}">${val >= 0 ? "+" : ""}${val.toFixed(4)} ZEC</div>
+            </div>`;
           }
           html += "</div>";
           document.getElementById("txs-tab").innerHTML = html;
         } catch {
           document.getElementById("txs-tab").innerHTML =
-            '<div style="color:#444">Unable to load</div>';
+            '<div style="color:#333">Unable to load</div>';
         }
       }
 
       function copyAddr(el) {
-        const text = el.textContent.replace("click to copy", "").trim();
+        const text =
+          el.getAttribute("data-addr") ||
+          el.textContent.replace("click to copy", "").trim();
         navigator.clipboard.writeText(text);
         showToast("Address copied!");
       }
@@ -625,12 +1376,17 @@
         btn.disabled = true;
         btn.textContent = "Generating Halo2 proof...";
 
+        // Show shockwave
+        showShockwave();
+
         try {
           const res = await fetch("/api/send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ accountId, to, amount, memo, srcPools: 4 }),
           }).then((r) => r.json());
+
+          hideShockwave();
 
           if (res.error) throw new Error(res.error);
 
@@ -646,12 +1402,29 @@
             loadTransactions();
           }, 3000);
         } catch (e) {
+          hideShockwave();
           showToast("Send failed: " + e.message, true);
         }
 
         btn.disabled = false;
         btn.textContent = "Send via Orchard (Halo2)";
       }
+
+      // Restore normal cursor on interactive elements
+      const interactiveSelector =
+        "a, button, input, textarea, .address-box, .tab, .btn, [onclick]";
+      document.addEventListener("mouseover", (e) => {
+        if (e.target.closest(interactiveSelector)) {
+          cursorEl.style.transform = "scale(1.5)";
+          cursorEl.style.mixBlendMode = "difference";
+        }
+      });
+      document.addEventListener("mouseout", (e) => {
+        if (e.target.closest(interactiveSelector)) {
+          cursorEl.style.transform = "scale(1)";
+          cursorEl.style.mixBlendMode = "screen";
+        }
+      });
 
       init();
     </script>

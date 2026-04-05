@@ -579,10 +579,11 @@
         border: 1px solid #1a1a2e;
         padding: 4px 8px;
         word-break: break-all;
-        font-size: 9px;
-        line-height: 1.3;
-        max-height: 32px;
+        font-size: 10px;
+        line-height: 1.4;
+        white-space: nowrap;
         overflow: hidden;
+        text-overflow: ellipsis;
         font-family: "JetBrains Mono", monospace;
         font-size: 14px;
         color: #f5b919;
@@ -1474,14 +1475,17 @@
         el.classList.add("active");
       }
 
-      function updateStatusBar(chain, blocks) {
+      async function updateStatusBar(chain, blocks) {
+        let netLabel = "---";
+        try {
+          const net = await fetch("/api/network").then((r) => r.json());
+          netLabel = (net.network || "testnet").toUpperCase();
+        } catch {}
         document.getElementById("sb-block").textContent =
           "BLOCK " + (blocks ? blocks.toLocaleString() : "---");
         document.getElementById("sb-block").className = blocks ? "" : "dim";
-        document.getElementById("sb-network").textContent = chain
-          ? chain.toUpperCase() + "NET"
-          : "NETWORK ---";
-        document.getElementById("sb-network").className = chain ? "" : "dim";
+        document.getElementById("sb-network").textContent = netLabel;
+        document.getElementById("sb-network").className = blocks ? "" : "dim";
         document.getElementById("sb-sync").textContent = blocks
           ? "SYNC: OK"
           : "SYNC: PENDING";

@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Zcash Testnet Wallet Web — Orchard/Halo2</title>
+    <title>ZCASH TESTNET WALLET — Orchard/Halo2</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap");
+
       * {
         margin: 0;
         padding: 0;
@@ -12,15 +14,35 @@
       }
 
       body {
-        font-family: -apple-system, system-ui, sans-serif;
-        background: #0a0a12;
+        font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
+        background: #08080f;
         color: #e0e0e0;
         height: 100vh;
         overflow: hidden;
+        font-size: 12px;
       }
 
-      /* ── Particle Background ── */
-      .particles-canvas {
+      /* ── Scanline Overlay ── */
+      body::after {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.03) 2px,
+          rgba(0, 0, 0, 0.03) 4px
+        );
+        pointer-events: none;
+        z-index: 9999;
+      }
+
+      /* ── Matrix Rain Background ── */
+      .matrix-canvas {
         position: fixed;
         top: 0;
         left: 0;
@@ -36,42 +58,47 @@
         z-index: 10;
         display: flex;
         align-items: center;
-        padding: 8px 24px;
-        border-bottom: 1px solid rgba(245, 185, 25, 0.08);
-        backdrop-filter: blur(12px);
-        background: rgba(10, 10, 18, 0.7);
+        padding: 6px 20px;
+        border-bottom: 1px solid #1a1a2e;
+        background: rgba(8, 8, 15, 0.95);
       }
       .navbar .logo {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
       }
 
-      /* ── Eyes (Hero Section) ── */
+      /* ── Eyes ── */
       .eyes-hero {
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 20px;
-        padding: 14px 0 10px 0;
+        gap: 16px;
+        padding: 8px 0 2px 0;
         position: relative;
         z-index: 10;
+        flex-direction: column;
+      }
+      .eyes-row {
+        display: flex;
+        gap: 16px;
+        align-items: center;
       }
       .eye {
-        width: 80px;
-        height: 80px;
-        background: radial-gradient(circle, #1a1a2e 60%, #0d0d18 100%);
-        border: 3px solid rgba(245, 185, 25, 0.3);
+        width: 56px;
+        height: 56px;
+        background: radial-gradient(circle, #0d0d18 60%, #08080f 100%);
+        border: 2px solid rgba(245, 185, 25, 0.25);
         border-radius: 50%;
         position: relative;
         overflow: hidden;
         box-shadow:
-          0 0 30px rgba(245, 185, 25, 0.1),
-          inset 0 0 20px rgba(0, 0, 0, 0.5);
+          0 0 20px rgba(245, 185, 25, 0.08),
+          inset 0 0 15px rgba(0, 0, 0, 0.6);
       }
       .eye .pupil {
-        width: 28px;
-        height: 28px;
+        width: 22px;
+        height: 22px;
         background: transparent;
         border-radius: 50%;
         position: absolute;
@@ -82,7 +109,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        filter: drop-shadow(0 0 12px rgba(245, 185, 25, 0.8));
+        filter: drop-shadow(0 0 10px rgba(245, 185, 25, 0.7));
       }
       .pupil-logo {
         width: 100%;
@@ -90,15 +117,25 @@
         border-radius: 50%;
         pointer-events: none;
       }
+      .surveillance-text {
+        font-size: 7px;
+        color: #00ff41;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0.7;
+        margin-top: 2px;
+      }
 
       /* ── Glitch Title ── */
       .glitch-title {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 800;
         color: #f5b919;
         position: relative;
         display: inline-block;
-        letter-spacing: 1px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
       }
       .glitch-title::before,
       .glitch-title::after {
@@ -175,55 +212,55 @@
 
       .navbar .status {
         margin-left: auto;
-        font-size: 11px;
+        font-size: 10px;
         color: #555;
+        font-family: "JetBrains Mono", monospace;
       }
       .navbar .status.connected {
-        color: #4ade80;
+        color: #00ff41;
       }
       .navbar .dot {
-        width: 6px;
-        height: 6px;
+        width: 5px;
+        height: 5px;
         border-radius: 50%;
         display: inline-block;
         margin-right: 4px;
       }
       .navbar .dot.green {
-        background: #4ade80;
-        box-shadow: 0 0 8px rgba(74, 222, 128, 0.5);
+        background: #00ff41;
+        box-shadow: 0 0 6px rgba(0, 255, 65, 0.5);
       }
       .navbar .dot.red {
         background: #f87171;
-        box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
+        box-shadow: 0 0 6px rgba(248, 113, 113, 0.5);
       }
 
       /* ── Main Layout ── */
       .main-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        padding: 12px 20px;
+        gap: 8px;
+        padding: 8px 16px;
         position: relative;
         z-index: 10;
-        height: calc(100vh - 140px);
+        height: calc(100vh - 130px);
         overflow: hidden;
       }
       .col {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
         overflow: hidden;
       }
 
-      /* ── Card with 3D tilt ── */
+      /* ── Card ── */
       .card {
-        background: rgba(13, 13, 24, 0.8);
-        border: 1px solid rgba(245, 185, 25, 0.06);
-        border-radius: 12px;
-        padding: 16px;
+        background: rgba(8, 8, 15, 0.92);
+        border: 1px solid #1a1a2e;
+        border-radius: 0;
+        padding: 12px 14px;
         position: relative;
         overflow: hidden;
-        backdrop-filter: blur(8px);
         transform-style: preserve-3d;
         transition:
           transform 0.15s ease-out,
@@ -242,52 +279,70 @@
         bottom: 0;
         background: radial-gradient(
           600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-          rgba(245, 185, 25, 0.04),
+          rgba(245, 185, 25, 0.02),
           transparent 40%
         );
         pointer-events: none;
         z-index: 0;
       }
       .card:hover {
-        border-color: rgba(245, 185, 25, 0.15);
-        box-shadow: 0 8px 40px rgba(245, 185, 25, 0.06);
+        border-color: rgba(245, 185, 25, 0.12);
+        box-shadow: 0 0 20px rgba(245, 185, 25, 0.03);
       }
       .card > * {
         position: relative;
         z-index: 1;
       }
       .card h2 {
-        font-size: 10px;
+        font-size: 9px;
         color: #666;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
         text-transform: uppercase;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        border-left: 2px solid #f5b919;
+        padding-left: 8px;
       }
 
       /* ── Shield Icon ── */
-      .shield-icon {
+      .shield-container {
         position: fixed;
-        bottom: 20px;
-        left: 20px;
+        bottom: 28px;
+        left: 16px;
         z-index: 5;
-        opacity: 0.12;
+        display: flex;
+        align-items: center;
+        gap: 8px;
         pointer-events: none;
       }
+      .shield-icon {
+        opacity: 0.15;
+      }
       .shield-icon svg {
-        width: 80px;
-        height: 100px;
-        filter: drop-shadow(0 0 30px rgba(245, 185, 25, 0.3));
+        width: 50px;
+        height: 62px;
+        filter: drop-shadow(0 0 20px rgba(245, 185, 25, 0.3));
+        animation: shield-pulse 4s ease-in-out infinite;
+      }
+      .zk-proof-label {
+        font-size: 8px;
+        color: #00ff41;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        opacity: 0.4;
+        font-family: "JetBrains Mono", monospace;
         animation: shield-pulse 4s ease-in-out infinite;
       }
       @keyframes shield-pulse {
         0%,
         100% {
-          opacity: 0.12;
-          filter: drop-shadow(0 0 20px rgba(245, 185, 25, 0.2));
+          opacity: 0.15;
+          filter: drop-shadow(0 0 15px rgba(245, 185, 25, 0.2));
         }
         50% {
-          opacity: 0.2;
-          filter: drop-shadow(0 0 40px rgba(245, 185, 25, 0.5));
+          opacity: 0.25;
+          filter: drop-shadow(0 0 30px rgba(245, 185, 25, 0.4));
         }
       }
 
@@ -297,8 +352,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 200px;
-        height: 200px;
+        width: 160px;
+        height: 160px;
         z-index: 0;
         pointer-events: none;
       }
@@ -307,7 +362,7 @@
         height: 100%;
         background: radial-gradient(
           ellipse,
-          rgba(245, 185, 25, 0.12) 0%,
+          rgba(245, 185, 25, 0.08) 0%,
           transparent 70%
         );
         border-radius: 40% 60% 55% 45% / 55% 40% 60% 45%;
@@ -340,22 +395,63 @@
       /* ── Balance ── */
       .balance-display {
         text-align: center;
-        padding: 8px 0;
+        padding: 16px 0;
         position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 100%;
+      }
+      .balance-network {
+        font-size: 10px;
+        color: #00ff41;
+        letter-spacing: 3px;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+      }
+      .balance-block-info {
+        font-size: 9px;
+        color: #444;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
       }
       .balance-amount {
-        font-size: 36px;
+        font-size: 72px;
         font-weight: 800;
         color: #f5b919;
         font-variant-numeric: tabular-nums;
-        text-shadow: 0 0 40px rgba(245, 185, 25, 0.3);
-        letter-spacing: -1px;
+        text-shadow:
+          0 0 40px rgba(245, 185, 25, 0.3),
+          0 0 80px rgba(245, 185, 25, 0.1);
+        letter-spacing: -2px;
+        font-family: "JetBrains Mono", monospace;
+        display: inline-flex;
+        align-items: center;
+        line-height: 1;
       }
       .balance-amount .digit {
         display: inline-block;
         animation: digit-reveal 0.6s ease-out forwards;
         opacity: 0;
         transform: translateY(20px);
+      }
+      .balance-cursor {
+        display: inline-block;
+        width: 3px;
+        height: 56px;
+        background: #f5b919;
+        margin-left: 2px;
+        animation: cursor-blink 1s step-end infinite;
+        vertical-align: middle;
+      }
+      @keyframes cursor-blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
       }
       @keyframes digit-reveal {
         0% {
@@ -371,52 +467,92 @@
         }
       }
       .balance-label {
-        font-size: 10px;
+        font-size: 11px;
         color: #555;
-        margin-top: 4px;
-        letter-spacing: 2px;
+        margin-top: 8px;
+        letter-spacing: 4px;
         text-transform: uppercase;
       }
+
+      /* Pool breakdown bars */
+      .pool-bars {
+        display: flex;
+        width: 100%;
+        height: 6px;
+        margin-top: 12px;
+        border: 0;
+        overflow: hidden;
+        gap: 1px;
+      }
+      .pool-bar {
+        height: 100%;
+        transition: width 0.6s ease;
+      }
+      .pool-bar.orchard {
+        background: #f5b919;
+      }
+      .pool-bar.sapling {
+        background: #3b82f6;
+      }
+      .pool-bar.transparent {
+        background: #555;
+      }
+
       .balance-pools {
         display: flex;
-        gap: 10px;
+        gap: 6px;
         justify-content: center;
-        margin-top: 10px;
+        margin-top: 8px;
       }
       .pool {
         text-align: center;
-        padding: 6px 12px;
-        background: rgba(18, 18, 31, 0.6);
-        border-radius: 8px;
-        border: 1px solid rgba(245, 185, 25, 0.05);
-        transition:
-          border-color 0.3s,
-          background 0.3s;
+        padding: 8px 14px;
+        background: rgba(10, 10, 18, 0.8);
+        border: 1px solid #1a1a2e;
+        flex: 1;
+        transition: border-color 0.3s;
       }
       .pool:hover {
         border-color: rgba(245, 185, 25, 0.15);
-        background: rgba(18, 18, 31, 0.9);
+      }
+      .pool .pool-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 3px;
+        vertical-align: middle;
+      }
+      .pool .pool-dot.orchard {
+        background: #f5b919;
+      }
+      .pool .pool-dot.sapling {
+        background: #3b82f6;
+      }
+      .pool .pool-dot.transparent {
+        background: #666;
       }
       .pool .amount {
-        font-size: 13px;
+        font-size: 18px;
         font-weight: 700;
-        color: #ccc;
+        color: #e0e0e0;
+        font-family: "JetBrains Mono", monospace;
       }
       .pool .name {
         font-size: 9px;
-        color: #555;
-        margin-top: 2px;
+        color: #666;
+        margin-top: 4px;
         letter-spacing: 1px;
+        text-transform: uppercase;
       }
 
       /* ── Address ── */
       .address-box {
-        background: rgba(8, 8, 15, 0.8);
-        border: 1px solid rgba(245, 185, 25, 0.3);
-        border-radius: 8px;
-        padding: 8px 10px;
+        background: rgba(8, 8, 15, 0.9);
+        border: 1px solid #1a1a2e;
+        padding: 6px 10px;
         word-break: break-all;
-        font-family: "SF Mono", "Fira Code", monospace;
+        font-family: "JetBrains Mono", monospace;
         font-size: 9px;
         color: #f5b919;
         cursor: pointer;
@@ -434,7 +570,7 @@
         background: linear-gradient(
           90deg,
           transparent,
-          rgba(245, 185, 25, 0.05),
+          rgba(245, 185, 25, 0.04),
           transparent
         );
         transition: left 0.5s ease;
@@ -443,63 +579,75 @@
         left: 100%;
       }
       .address-box:hover {
-        background: rgba(13, 13, 24, 0.9);
-        box-shadow: 0 0 20px rgba(245, 185, 25, 0.08);
-        border-color: rgba(245, 185, 25, 0.5);
+        background: rgba(13, 13, 24, 0.95);
+        border-color: rgba(245, 185, 25, 0.4);
+      }
+      .address-prefix {
+        color: #00ff41;
+        margin-right: 4px;
+        user-select: none;
       }
       .address-box .copy-hint {
         position: absolute;
         top: 4px;
         right: 8px;
-        font-size: 8px;
-        color: #444;
-        font-family: sans-serif;
+        font-size: 7px;
+        color: #333;
         transition: color 0.3s;
       }
       .address-box:hover .copy-hint {
-        color: #888;
+        color: #666;
       }
       .address-label {
-        font-size: 10px;
+        font-size: 9px;
         color: #555;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
         display: flex;
         align-items: center;
         gap: 6px;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
       }
       .address-label .tag {
-        background: rgba(26, 58, 26, 0.8);
-        color: #4ade80;
-        padding: 1px 6px;
-        border-radius: 4px;
-        font-size: 8px;
+        background: rgba(0, 255, 65, 0.1);
+        color: #00ff41;
+        padding: 1px 5px;
+        font-size: 7px;
         font-weight: 700;
         letter-spacing: 0.5px;
+        border: 1px solid rgba(0, 255, 65, 0.2);
+      }
+      .address-label .pool-indicator {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        margin-right: 2px;
       }
 
       /* ── Send Form ── */
       .send-form {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
       }
       .send-form label {
-        font-size: 9px;
-        color: #666;
+        font-size: 8px;
+        color: #555;
         text-transform: uppercase;
-        letter-spacing: 1.5px;
-        margin-bottom: 2px;
+        letter-spacing: 2px;
+        margin-bottom: 1px;
         display: block;
+        font-family: "JetBrains Mono", monospace;
       }
       .send-form input,
       .send-form textarea {
-        background: rgba(8, 8, 15, 0.8);
-        border: 1px solid rgba(26, 26, 46, 0.8);
-        border-radius: 8px;
-        padding: 8px 10px;
+        background: rgba(8, 8, 15, 0.9);
+        border: 1px solid #1a1a2e;
+        padding: 7px 10px;
         color: #e0e0e0;
-        font-family: "SF Mono", "Fira Code", monospace;
-        font-size: 12px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
         outline: none;
         transition:
           border-color 0.3s,
@@ -508,33 +656,34 @@
       }
       .send-form input:focus,
       .send-form textarea:focus {
-        border-color: rgba(245, 185, 25, 0.5);
-        box-shadow: 0 0 20px rgba(245, 185, 25, 0.08);
+        border-color: rgba(245, 185, 25, 0.4);
+        box-shadow: 0 0 12px rgba(245, 185, 25, 0.06);
       }
       .send-form textarea {
         resize: none;
-        height: 44px;
+        height: 38px;
       }
 
       /* ── Buttons ── */
       .btn {
-        padding: 10px 18px;
+        padding: 9px 16px;
         border: none;
-        border-radius: 8px;
-        font-size: 12px;
+        border-radius: 4px;
+        font-size: 11px;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
       }
       .btn-primary {
-        background: linear-gradient(135deg, #f5b919 0%, #e8a317 100%);
-        color: #0a0a12;
-        letter-spacing: 0.5px;
+        background: #f5b919;
+        color: #08080f;
       }
       .btn-primary:hover {
-        box-shadow: 0 4px 30px rgba(245, 185, 25, 0.3);
+        box-shadow: 0 0 20px rgba(245, 185, 25, 0.3);
         transform: translateY(-1px);
       }
       .btn-primary:active {
@@ -546,15 +695,20 @@
         transform: none;
         box-shadow: none;
       }
+      .btn-cursor {
+        animation: cursor-blink 1s step-end infinite;
+        margin-right: 4px;
+      }
       .btn-secondary {
-        background: rgba(26, 26, 46, 0.6);
-        color: #777;
-        border: 1px solid rgba(26, 26, 46, 0.8);
+        background: rgba(26, 26, 46, 0.5);
+        color: #666;
+        border: 1px solid #1a1a2e;
+        border-radius: 4px;
       }
       .btn-secondary:hover {
-        background: rgba(34, 34, 54, 0.8);
-        color: #bbb;
-        border-color: rgba(245, 185, 25, 0.15);
+        background: rgba(34, 34, 54, 0.7);
+        color: #999;
+        border-color: rgba(245, 185, 25, 0.12);
       }
 
       /* ── Send Shockwave ── */
@@ -575,7 +729,7 @@
       }
       .shockwave-ring {
         position: absolute;
-        border: 2px solid rgba(245, 185, 25, 0.6);
+        border: 1px solid rgba(245, 185, 25, 0.5);
         border-radius: 50%;
         animation: shockwave-expand 1.5s ease-out forwards;
         opacity: 0;
@@ -595,11 +749,12 @@
       .shockwave-text {
         position: relative;
         z-index: 1;
-        font-size: 14px;
+        font-size: 12px;
         font-weight: 700;
         color: #f5b919;
-        letter-spacing: 3px;
+        letter-spacing: 4px;
         text-transform: uppercase;
+        font-family: "JetBrains Mono", monospace;
         animation: proof-pulse 1s ease-in-out infinite;
       }
       @keyframes proof-pulse {
@@ -613,69 +768,78 @@
         }
       }
 
-      /* ── Transactions & Notes ── */
+      /* ── Tabs ── */
       .tabs {
         display: flex;
-        gap: 4px;
-        margin-bottom: 10px;
+        gap: 2px;
+        margin-bottom: 8px;
       }
       .tab {
-        padding: 6px 14px;
-        border-radius: 6px;
-        font-size: 11px;
+        padding: 5px 12px;
+        font-size: 9px;
         font-weight: 600;
         cursor: pointer;
         background: transparent;
         border: 1px solid transparent;
         color: #555;
         transition: all 0.3s;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
+        text-transform: uppercase;
       }
       .tab:hover {
         color: #888;
-        border-color: rgba(245, 185, 25, 0.1);
+        border-color: #1a1a2e;
       }
       .tab.active {
-        background: linear-gradient(135deg, #f5b919 0%, #e8a317 100%);
-        color: #0a0a12;
+        background: #f5b919;
+        color: #08080f;
         border-color: transparent;
       }
 
+      /* ── Transactions & Notes ── */
       .tx-list,
       .notes-list {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 1px;
         overflow-y: auto;
-        max-height: calc(100vh - 340px);
+        max-height: calc(100vh - 320px);
       }
       .tx-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 10px;
-        background: rgba(8, 8, 15, 0.6);
-        border-radius: 8px;
-        font-size: 11px;
+        padding: 6px 8px;
+        font-size: 10px;
         border: 1px solid transparent;
         transition: all 0.3s;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .tx-item:nth-child(odd) {
+        background: rgba(8, 8, 15, 0.6);
+      }
+      .tx-item:nth-child(even) {
+        background: rgba(13, 13, 24, 0.4);
       }
       .tx-item:hover {
         border-color: rgba(245, 185, 25, 0.08);
-        background: rgba(13, 13, 24, 0.8);
+        background: rgba(18, 18, 30, 0.8);
       }
       .tx-item .txid {
-        font-family: "SF Mono", "Fira Code", monospace;
-        color: #555;
+        font-family: "JetBrains Mono", monospace;
+        color: #444;
         max-width: 160px;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-size: 9px;
       }
       .tx-item .value {
         font-weight: 700;
         font-variant-numeric: tabular-nums;
       }
       .tx-item .value.positive {
-        color: #4ade80;
+        color: #00ff41;
       }
       .tx-item .value.negative {
         color: #f87171;
@@ -685,29 +849,50 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 6px 10px;
-        background: rgba(8, 8, 15, 0.6);
-        border-radius: 8px;
+        padding: 5px 8px;
         border: 1px solid transparent;
         transition: all 0.3s;
+        font-family: "JetBrains Mono", monospace;
+      }
+      .note-item:nth-child(odd) {
+        background: rgba(8, 8, 15, 0.6);
+      }
+      .note-item:nth-child(even) {
+        background: rgba(13, 13, 24, 0.4);
       }
       .note-item:hover {
-        border-color: rgba(245, 185, 25, 0.08);
+        border-color: rgba(245, 185, 25, 0.06);
       }
       .note-item .pool-tag {
-        font-size: 9px;
-        padding: 2px 8px;
-        border-radius: 5px;
+        font-size: 8px;
+        padding: 2px 6px;
         font-weight: 700;
-        letter-spacing: 0.5px;
+        letter-spacing: 1px;
+        font-family: "JetBrains Mono", monospace;
       }
       .note-item .pool-tag.orchard {
-        background: linear-gradient(135deg, #f5b919, #e8a317);
-        color: #0a0a12;
+        background: rgba(245, 185, 25, 0.15);
+        color: #f5b919;
+        border: 1px solid rgba(245, 185, 25, 0.3);
       }
       .note-item .pool-tag.sapling {
-        background: rgba(26, 26, 46, 0.8);
-        color: #888;
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+        border: 1px solid rgba(59, 130, 246, 0.2);
+      }
+      .note-pool-dot {
+        display: inline-block;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        margin-right: 3px;
+        vertical-align: middle;
+      }
+      .note-pool-dot.orchard {
+        background: #f5b919;
+      }
+      .note-pool-dot.sapling {
+        background: #3b82f6;
       }
 
       /* ── Loading ── */
@@ -716,14 +901,16 @@
         align-items: center;
         justify-content: center;
         gap: 8px;
-        padding: 16px;
-        color: #444;
-        font-size: 12px;
+        padding: 14px;
+        color: #333;
+        font-size: 10px;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
       }
       .spinner {
-        width: 14px;
-        height: 14px;
-        border: 2px solid #222;
+        width: 12px;
+        height: 12px;
+        border: 2px solid #1a1a2e;
         border-top-color: #f5b919;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
@@ -737,22 +924,21 @@
       /* ── Toast ── */
       .toast {
         position: fixed;
-        bottom: 24px;
-        right: 24px;
-        background: rgba(26, 58, 26, 0.9);
-        border: 1px solid #4ade80;
-        color: #4ade80;
-        padding: 12px 20px;
-        border-radius: 10px;
-        font-size: 12px;
+        bottom: 32px;
+        right: 20px;
+        background: rgba(8, 8, 15, 0.95);
+        border: 1px solid #00ff41;
+        color: #00ff41;
+        padding: 10px 16px;
+        font-size: 10px;
         display: none;
         z-index: 2000;
-        backdrop-filter: blur(12px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
         animation: toast-in 0.3s ease-out;
       }
       .toast.error {
-        background: rgba(58, 26, 26, 0.9);
+        background: rgba(8, 8, 15, 0.95);
         border-color: #f87171;
         color: #f87171;
       }
@@ -770,83 +956,141 @@
         }
       }
 
+      /* ── Status Bar ── */
+      .status-bar {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 22px;
+        background: rgba(8, 8, 15, 0.98);
+        border-top: 1px solid #1a1a2e;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        font-size: 8px;
+        color: #00ff41;
+        font-family: "JetBrains Mono", monospace;
+        letter-spacing: 1px;
+        gap: 12px;
+      }
+      .status-bar .sep {
+        color: #1a1a2e;
+      }
+      .status-bar .dim {
+        color: #333;
+      }
+
       /* ── Scrollbar ── */
       ::-webkit-scrollbar {
-        width: 4px;
+        width: 3px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
       }
       ::-webkit-scrollbar-thumb {
-        background: rgba(245, 185, 25, 0.15);
-        border-radius: 3px;
+        background: rgba(245, 185, 25, 0.12);
       }
       ::-webkit-scrollbar-thumb:hover {
-        background: rgba(245, 185, 25, 0.3);
+        background: rgba(245, 185, 25, 0.25);
+      }
+
+      /* ── Tooltip ── */
+      .addr-truncated {
+        position: relative;
+      }
+      .addr-truncated .addr-tooltip {
+        display: none;
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        background: rgba(8, 8, 15, 0.98);
+        border: 1px solid #f5b919;
+        color: #f5b919;
+        padding: 6px 8px;
+        font-size: 8px;
+        word-break: break-all;
+        max-width: 400px;
+        z-index: 50;
+        font-family: "JetBrains Mono", monospace;
+        margin-bottom: 4px;
+      }
+      .addr-truncated:hover .addr-tooltip {
+        display: block;
       }
     </style>
   </head>
   <body>
-    <!-- Particle Background -->
-    <canvas class="particles-canvas" id="particles"></canvas>
+    <!-- Matrix Rain Background -->
+    <canvas class="matrix-canvas" id="matrix"></canvas>
 
     <!-- Shield Icon -->
-    <div class="shield-icon">
-      <svg viewBox="0 0 100 120" fill="none">
-        <path
-          d="M50 5 L90 25 L90 65 C90 90 50 115 50 115 C50 115 10 90 10 65 L10 25 Z"
-          stroke="#f5b919"
-          stroke-width="1.5"
-          fill="rgba(245,185,25,0.03)"
-        />
-        <path
-          d="M50 20 L75 33 L75 60 C75 78 50 95 50 95 C50 95 25 78 25 60 L25 33 Z"
-          stroke="rgba(245,185,25,0.3)"
-          stroke-width="0.5"
-          fill="none"
-        />
-      </svg>
+    <div class="shield-container">
+      <div class="shield-icon">
+        <svg viewBox="0 0 100 120" fill="none">
+          <path
+            d="M50 5 L90 25 L90 65 C90 90 50 115 50 115 C50 115 10 90 10 65 L10 25 Z"
+            stroke="#F5B919"
+            stroke-width="1.5"
+            fill="rgba(245,185,25,0.02)"
+          />
+          <path
+            d="M50 20 L75 33 L75 60 C75 78 50 95 50 95 C50 95 25 78 25 60 L25 33 Z"
+            stroke="rgba(245,185,25,0.25)"
+            stroke-width="0.5"
+            fill="none"
+          />
+        </svg>
+      </div>
+      <span class="zk-proof-label">ZK-PROOF ACTIVE</span>
     </div>
 
     <!-- Shockwave Overlay -->
     <div class="shockwave-overlay" id="shockwave-overlay">
-      <div class="shockwave-text">Generating Halo2 proof...</div>
+      <div class="shockwave-text">GENERATING HALO2 PROOF...</div>
     </div>
 
     <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
-        <span class="glitch-title" data-text="Zcash Testnet Wallet Web" id="glitch-title"
-          >Zcash Testnet Wallet Web</span
+        <span
+          class="glitch-title"
+          data-text="ZCASH TESTNET WALLET"
+          id="glitch-title"
+          >ZCASH TESTNET WALLET</span
         >
       </div>
       <div class="status" id="status">
-        <span class="dot red"></span> Connecting...
+        <span class="dot red"></span> CONNECTING...
       </div>
     </nav>
 
     <!-- Eyes Hero Section -->
     <div class="eyes-hero">
-      <div class="eye" id="eye-left">
-        <div class="pupil" id="pupil-left">
-          <img
-            src="/zcash.svg"
-            alt="Z"
-            class="pupil-logo"
-            onerror="this.style.display = 'none'"
-          />
+      <div class="eyes-row">
+        <div class="eye" id="eye-left">
+          <div class="pupil" id="pupil-left">
+            <img
+              src="/zcash.svg"
+              alt="Z"
+              class="pupil-logo"
+              onerror="this.style.display = 'none'"
+            />
+          </div>
+        </div>
+        <div class="eye" id="eye-right">
+          <div class="pupil" id="pupil-right">
+            <img
+              src="/zcash.svg"
+              alt="Z"
+              class="pupil-logo"
+              onerror="this.style.display = 'none'"
+            />
+          </div>
         </div>
       </div>
-      <div class="eye" id="eye-right">
-        <div class="pupil" id="pupil-right">
-          <img
-            src="/zcash.svg"
-            alt="Z"
-            class="pupil-logo"
-            onerror="this.style.display = 'none'"
-          />
-        </div>
-      </div>
+      <div class="surveillance-text">SURVEILLANCE DEFEATED</div>
     </div>
 
     <!-- Main Two-Column Layout -->
@@ -861,21 +1105,21 @@
             </div>
             <div class="loading">
               <div class="spinner"></div>
-              Loading...
+              LOADING...
             </div>
           </div>
         </div>
 
         <!-- Addresses -->
         <div class="card" data-tilt>
-          <h2>Receive</h2>
+          <h2>RECEIVE</h2>
           <div
             id="addresses-section"
-            style="overflow-y: auto; max-height: calc(100vh - 420px)"
+            style="overflow-y: auto; max-height: calc(100vh - 400px)"
           >
             <div class="loading">
               <div class="spinner"></div>
-              Loading addresses...
+              LOADING ADDRESSES...
             </div>
           </div>
         </div>
@@ -885,10 +1129,10 @@
       <div class="col">
         <!-- Send -->
         <div class="card" data-tilt>
-          <h2>Send (Shielded)</h2>
+          <h2>SEND (SHIELDED)</h2>
           <div class="send-form">
             <div>
-              <label>To Address</label>
+              <label>DESTINATION ADDRESS</label>
               <input
                 type="text"
                 id="send-to"
@@ -896,11 +1140,11 @@
               />
             </div>
             <div>
-              <label>Amount (ZEC)</label>
+              <label>AMOUNT (ZEC)</label>
               <input type="text" id="send-amount" placeholder="0.001" />
             </div>
             <div>
-              <label>Encrypted Memo (optional)</label>
+              <label>ENCRYPTED MEMO (OPTIONAL)</label>
               <textarea
                 id="send-memo"
                 placeholder="Only the recipient can read this..."
@@ -911,7 +1155,7 @@
               id="send-btn"
               onclick="sendShielded()"
             >
-              Send via Orchard (Halo2)
+              <span class="btn-cursor">&gt;</span> BROADCAST [Orchard/Halo2]
             </button>
           </div>
         </div>
@@ -920,26 +1164,39 @@
         <div class="card" data-tilt>
           <div class="tabs">
             <button class="tab active" onclick="showTab('notes', this)">
-              Shielded Notes
+              SHIELDED NOTES
             </button>
             <button class="tab" onclick="showTab('txs', this)">
-              Transactions
+              TRANSACTIONS
             </button>
           </div>
           <div id="notes-tab">
             <div class="loading">
               <div class="spinner"></div>
-              Loading...
+              LOADING...
             </div>
           </div>
           <div id="txs-tab" style="display: none">
             <div class="loading">
               <div class="spinner"></div>
-              Loading...
+              LOADING...
             </div>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="status-bar">
+      <span id="sb-block" class="dim">BLOCK ---</span>
+      <span class="sep">|</span>
+      <span id="sb-network" class="dim">NETWORK ---</span>
+      <span class="sep">|</span>
+      <span>HALO2 ACTIVE</span>
+      <span class="sep">|</span>
+      <span id="sb-sync">SYNC: PENDING</span>
+      <span class="sep">|</span>
+      <span id="sb-peers">PEERS: ---</span>
     </div>
 
     <div class="toast" id="toast"></div>
@@ -952,45 +1209,52 @@
       let mouseX = 0,
         mouseY = 0;
 
-      // ── Particles ──
-      (function initParticles() {
-        const canvas = document.getElementById("particles");
+      // ── Matrix Rain ──
+      (function initMatrix() {
+        const canvas = document.getElementById("matrix");
         const ctx = canvas.getContext("2d");
-        let particles = [];
-        const COUNT = 60;
+        const chars = "01ZEC01ZEC01010101ZEC";
+        let columns, drops;
 
         function resize() {
           canvas.width = window.innerWidth;
           canvas.height = window.innerHeight;
+          const fontSize = 14;
+          columns = Math.floor(canvas.width / fontSize);
+          drops = new Array(columns).fill(1);
+          for (let i = 0; i < columns; i++) {
+            drops[i] = (Math.random() * canvas.height) / fontSize;
+          }
         }
         resize();
         window.addEventListener("resize", resize);
 
-        for (let i = 0; i < COUNT; i++) {
-          particles.push({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            r: Math.random() * 2 + 0.5,
-            vx: (Math.random() - 0.5) * 0.3,
-            vy: (Math.random() - 0.5) * 0.3,
-            o: Math.random() * 0.15 + 0.03,
-          });
-        }
-
         function draw() {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          for (const p of particles) {
-            p.x += p.vx;
-            p.y += p.vy;
-            if (p.x < 0) p.x = canvas.width;
-            if (p.x > canvas.width) p.x = 0;
-            if (p.y < 0) p.y = canvas.height;
-            if (p.y > canvas.height) p.y = 0;
+          ctx.fillStyle = "rgba(8, 8, 15, 0.06)";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(245, 185, 25, ${p.o})`;
-            ctx.fill();
+          ctx.font = "12px JetBrains Mono, monospace";
+
+          for (let i = 0; i < columns; i++) {
+            const char = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * 14;
+            const y = drops[i] * 14;
+
+            // Green-yellow tint with very low opacity
+            const brightness = Math.random() * 0.12 + 0.03;
+            const isYellow = Math.random() > 0.7;
+            if (isYellow) {
+              ctx.fillStyle = `rgba(245, 185, 25, ${brightness})`;
+            } else {
+              ctx.fillStyle = `rgba(0, 255, 65, ${brightness})`;
+            }
+
+            ctx.fillText(char, x, y);
+
+            if (y > canvas.height && Math.random() > 0.985) {
+              drops[i] = 0;
+            }
+            drops[i] += 0.3 + Math.random() * 0.2;
           }
           requestAnimationFrame(draw);
         }
@@ -1086,6 +1350,10 @@
 
           container.appendChild(span);
         }
+        // Add blinking cursor
+        const cursor = document.createElement("span");
+        cursor.className = "balance-cursor";
+        container.appendChild(cursor);
       }
 
       // ── Address Decryption Effect ──
@@ -1094,8 +1362,10 @@
         if (!original) return;
         const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
         let iteration = 0;
+        const textSpan = el.querySelector(".addr-text");
+        if (!textSpan) return;
         const interval = setInterval(() => {
-          el.childNodes[0].textContent = original
+          textSpan.textContent = original
             .split("")
             .map((char, idx) => {
               if (idx < iteration) return char;
@@ -1104,7 +1374,7 @@
             .join("");
           iteration += Math.ceil(original.length / 10);
           if (iteration >= original.length) {
-            el.childNodes[0].textContent = original;
+            textSpan.textContent = original;
             clearInterval(interval);
           }
         }, 30);
@@ -1160,6 +1430,22 @@
         el.classList.add("active");
       }
 
+      function updateStatusBar(chain, blocks) {
+        document.getElementById("sb-block").textContent =
+          "BLOCK " + (blocks ? blocks.toLocaleString() : "---");
+        document.getElementById("sb-block").className = blocks ? "" : "dim";
+        document.getElementById("sb-network").textContent = chain
+          ? chain.toUpperCase() + "NET"
+          : "NETWORK ---";
+        document.getElementById("sb-network").className = chain ? "" : "dim";
+        document.getElementById("sb-sync").textContent = blocks
+          ? "SYNC: OK"
+          : "SYNC: PENDING";
+        document.getElementById("sb-peers").textContent = blocks
+          ? "PEERS: CONNECTED"
+          : "PEERS: ---";
+      }
+
       async function init() {
         // Check chain
         try {
@@ -1170,9 +1456,11 @@
             "net \u00B7 Block " +
             chain.blocks.toLocaleString();
           document.getElementById("status").className = "status connected";
+          updateStatusBar(chain.chain, chain.blocks);
         } catch {
           document.getElementById("status").innerHTML =
-            '<span class="dot red"></span> Node offline';
+            '<span class="dot red"></span> NODE OFFLINE';
+          updateStatusBar(null, null);
           return;
         }
 
@@ -1198,15 +1486,31 @@
             r.json(),
           );
           const total = parseFloat(bal.total || "0");
+          const orchard = parseFloat(bal.orchard || "0");
+          const sapling = parseFloat(bal.sapling || "0");
+          const transparent = parseFloat(bal.transparent || "0");
+
+          // Compute percentages for bar
+          const sum = orchard + sapling + transparent;
+          const oPct = sum > 0 ? (orchard / sum) * 100 : 33;
+          const sPct = sum > 0 ? (sapling / sum) * 100 : 33;
+          const tPct = sum > 0 ? (transparent / sum) * 100 : 34;
+
           const section = document.getElementById("balance-section");
           section.innerHTML = `
             <div class="blob-container"><div class="morphing-blob"></div></div>
+            <div class="balance-network">TESTNET // SHIELDED VAULT</div>
             <div class="balance-amount" id="balance-digits"></div>
-            <div class="balance-label">ZEC Total Balance</div>
+            <div class="balance-label">ZEC TOTAL BALANCE</div>
+            <div class="pool-bars">
+              <div class="pool-bar orchard" style="width:${oPct}%"></div>
+              <div class="pool-bar sapling" style="width:${sPct}%"></div>
+              <div class="pool-bar transparent" style="width:${tPct}%"></div>
+            </div>
             <div class="balance-pools">
-              <div class="pool"><div class="amount">${parseFloat(bal.orchard || "0").toFixed(4)}</div><div class="name">Orchard</div></div>
-              <div class="pool"><div class="amount">${parseFloat(bal.sapling || "0").toFixed(4)}</div><div class="name">Sapling</div></div>
-              <div class="pool"><div class="amount">${parseFloat(bal.transparent || "0").toFixed(4)}</div><div class="name">Transparent</div></div>
+              <div class="pool"><div class="amount"><span class="pool-dot orchard"></span>${orchard.toFixed(4)}</div><div class="name">ORCHARD</div></div>
+              <div class="pool"><div class="amount"><span class="pool-dot sapling"></span>${sapling.toFixed(4)}</div><div class="name">SAPLING</div></div>
+              <div class="pool"><div class="amount"><span class="pool-dot transparent"></span>${transparent.toFixed(4)}</div><div class="name">TRANSPARENT</div></div>
             </div>
           `;
           cascadeDigits(
@@ -1215,8 +1519,13 @@
           );
         } catch {
           document.getElementById("balance-section").innerHTML =
-            '<div class="blob-container"><div class="morphing-blob"></div></div><div class="balance-amount">\u2014</div><div class="balance-label">Unable to load</div>';
+            '<div class="blob-container"><div class="morphing-blob"></div></div><div class="balance-amount">\u2014</div><div class="balance-label">UNABLE TO LOAD</div>';
         }
+      }
+
+      function truncateAddr(addr) {
+        if (!addr || addr.length < 24) return addr;
+        return addr.slice(0, 12) + "..." + addr.slice(-8);
       }
 
       async function loadAddresses() {
@@ -1227,39 +1536,46 @@
           let html = "";
           if (addrs.ua) {
             html +=
-              '<div style="margin-bottom:8px"><div class="address-label">Unified Address <span class="tag">RECOMMENDED</span></div>';
+              '<div style="margin-bottom:6px"><div class="address-label"><span class="pool-indicator" style="background:#F5B919"></span>UNIFIED ADDRESS <span class="tag">RECOMMENDED</span></div>';
             html +=
-              '<div class="address-box" data-addr="' +
+              '<div class="address-box addr-truncated" data-addr="' +
               addrs.ua +
-              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span>' +
+              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix">$</span><span class="addr-text">' +
               addrs.ua +
-              '</span><span class="copy-hint">click to copy</span></div></div>';
+              '</span><span class="copy-hint">CLICK TO COPY</span><div class="addr-tooltip">' +
+              addrs.ua +
+              "</div></div></div>";
           }
           if (addrs.orchard) {
             html +=
-              '<div style="margin-bottom:8px"><div class="address-label">Orchard <span class="tag">HALO2</span></div>';
+              '<div style="margin-bottom:6px"><div class="address-label"><span class="pool-indicator" style="background:#F5B919"></span>ORCHARD <span class="tag">HALO2</span></div>';
             html +=
-              '<div class="address-box" data-addr="' +
+              '<div class="address-box addr-truncated" data-addr="' +
               addrs.orchard +
-              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span>' +
+              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix">$</span><span class="addr-text">' +
               addrs.orchard +
-              '</span><span class="copy-hint">click to copy</span></div></div>';
+              '</span><span class="copy-hint">CLICK TO COPY</span><div class="addr-tooltip">' +
+              addrs.orchard +
+              "</div></div></div>";
           }
           if (addrs.transparent) {
-            html += '<div><div class="address-label">Transparent</div>';
             html +=
-              '<div class="address-box" style="border-color:rgba(26,26,46,0.8);color:#888" data-addr="' +
+              '<div style="margin-bottom:6px"><div class="address-label"><span class="pool-indicator" style="background:#666"></span>TRANSPARENT</div>';
+            html +=
+              '<div class="address-box addr-truncated" style="border-color:#1a1a2e;color:#666" data-addr="' +
               addrs.transparent +
-              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span>' +
+              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix" style="color:#555">$</span><span class="addr-text">' +
               addrs.transparent +
-              '</span><span class="copy-hint">click to copy</span></div></div>';
+              '</span><span class="copy-hint">CLICK TO COPY</span><div class="addr-tooltip">' +
+              addrs.transparent +
+              "</div></div></div>";
           }
           html +=
-            '<button class="btn btn-secondary" style="margin-top:8px;width:100%" onclick="newAddresses()">Generate New Addresses</button>';
+            '<button class="btn btn-secondary" style="margin-top:6px;width:100%" onclick="newAddresses()">GENERATE NEW ADDRESSES</button>';
           document.getElementById("addresses-section").innerHTML = html;
         } catch {
           document.getElementById("addresses-section").innerHTML =
-            '<div style="color:#444">Unable to load addresses</div>';
+            '<div style="color:#333;font-size:10px">UNABLE TO LOAD ADDRESSES</div>';
         }
       }
 
@@ -1270,22 +1586,22 @@
           );
           if (!notes.length) {
             document.getElementById("notes-tab").innerHTML =
-              '<div style="color:#333;text-align:center;padding:16px;font-size:12px">No shielded notes yet</div>';
+              '<div style="color:#333;text-align:center;padding:14px;font-size:10px;letter-spacing:1px">NO SHIELDED NOTES YET</div>';
             return;
           }
           let html = '<div class="notes-list">';
           for (const n of notes) {
             const pool = n.pool === 2 ? "orchard" : "sapling";
             html += `<div class="note-item">
-              <span class="pool-tag ${pool}">${pool.toUpperCase()}</span>
-              <span style="font-family:'SF Mono',monospace;font-size:12px;font-weight:700">${parseFloat(n.value).toFixed(4)} ZEC</span>
+              <span><span class="note-pool-dot ${pool}"></span><span class="pool-tag ${pool}">${pool.toUpperCase()}</span></span>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:#ccc">${parseFloat(n.value).toFixed(4)} ZEC</span>
             </div>`;
           }
           html += "</div>";
           document.getElementById("notes-tab").innerHTML = html;
         } catch {
           document.getElementById("notes-tab").innerHTML =
-            '<div style="color:#333">Unable to load</div>';
+            '<div style="color:#333;font-size:10px">UNABLE TO LOAD</div>';
         }
       }
 
@@ -1296,7 +1612,7 @@
           );
           if (!txs.length) {
             document.getElementById("txs-tab").innerHTML =
-              '<div style="color:#333;text-align:center;padding:16px;font-size:12px">No transactions yet</div>';
+              '<div style="color:#333;text-align:center;padding:14px;font-size:10px;letter-spacing:1px">NO TRANSACTIONS YET</div>';
             return;
           }
           let html = '<div class="tx-list">';
@@ -1304,7 +1620,7 @@
             const val = parseFloat(tx.value);
             const cls = val >= 0 ? "positive" : "negative";
             html += `<div class="tx-item">
-              <div><div class="txid">${tx.txid}</div><div style="font-size:9px;color:#333;margin-top:2px">Block ${tx.height}</div></div>
+              <div><div class="txid">${tx.txid}</div><div style="font-size:8px;color:#333;margin-top:1px;letter-spacing:1px">BLOCK ${tx.height}</div></div>
               <div class="value ${cls}">${val >= 0 ? "+" : ""}${val.toFixed(4)} ZEC</div>
             </div>`;
           }
@@ -1312,16 +1628,16 @@
           document.getElementById("txs-tab").innerHTML = html;
         } catch {
           document.getElementById("txs-tab").innerHTML =
-            '<div style="color:#333">Unable to load</div>';
+            '<div style="color:#333;font-size:10px">UNABLE TO LOAD</div>';
         }
       }
 
       function copyAddr(el) {
         const text =
           el.getAttribute("data-addr") ||
-          el.textContent.replace("click to copy", "").trim();
+          el.textContent.replace("CLICK TO COPY", "").replace("$", "").trim();
         navigator.clipboard.writeText(text);
-        showToast("Address copied!");
+        showToast("ADDRESS COPIED!");
       }
 
       async function newAddresses() {
@@ -1330,9 +1646,9 @@
             method: "POST",
           });
           loadAddresses();
-          showToast("New addresses generated!");
+          showToast("NEW ADDRESSES GENERATED!");
         } catch (e) {
-          showToast("Failed: " + e.message, true);
+          showToast("FAILED: " + e.message, true);
         }
       }
 
@@ -1342,13 +1658,13 @@
         const memo = document.getElementById("send-memo").value.trim();
 
         if (!to || !amount) {
-          showToast("Enter address and amount", true);
+          showToast("ENTER ADDRESS AND AMOUNT", true);
           return;
         }
 
         const btn = document.getElementById("send-btn");
         btn.disabled = true;
-        btn.textContent = "Generating Halo2 proof...";
+        btn.textContent = "GENERATING HALO2 PROOF...";
 
         // Show shockwave
         showShockwave();
@@ -1364,7 +1680,7 @@
 
           if (res.error) throw new Error(res.error);
 
-          showToast("Sent! txid: " + (res.txid || "").slice(0, 16) + "...");
+          showToast("SENT! TXID: " + (res.txid || "").slice(0, 16) + "...");
           document.getElementById("send-to").value = "";
           document.getElementById("send-amount").value = "";
           document.getElementById("send-memo").value = "";
@@ -1377,11 +1693,12 @@
           }, 3000);
         } catch (e) {
           hideShockwave();
-          showToast("Send failed: " + e.message, true);
+          showToast("SEND FAILED: " + e.message, true);
         }
 
         btn.disabled = false;
-        btn.textContent = "Send via Orchard (Halo2)";
+        btn.innerHTML =
+          '<span class="btn-cursor">&gt;</span> BROADCAST [Orchard/Halo2]';
       }
 
       init();

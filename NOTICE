@@ -1,0 +1,27 @@
+NOTICE — Open Source Attribution
+
+This project was migrated from a Bitcoin open source project to Zcash
+using Zcash Migrate (https://github.com/Michae2xl/zcash-migrate).
+
+ORIGINAL PROJECT
+  All original source code, copyright notices, and license terms remain
+  unchanged and are the property of their respective authors.
+  The original LICENSE file is preserved in its entirety.
+
+ZCASH ENHANCEMENTS
+  Files in zcash-enhancements/ and zcash-deploy/ are new additions
+  licensed under the MIT License:
+
+  Copyright (c) 2026 Zcash Migrate Contributors
+  MIT License — see zcash-enhancements/LICENSE for details.
+
+MODIFICATIONS
+  The following automated modifications were made to adapt the project
+  for the Zcash network:
+  - Module/directory renames (e.g. bitcoin/ → zcash/)
+  - Network parameter updates (ports, DNS seeds, binary names)
+  - Class renames (e.g. CBitcoinAddress → CZcashAddress)
+  - Currency references (BTC → ZEC, satoshis → zatoshis)
+
+  All original copyright headers and license notices are preserved.
+  No original license terms were modified or removed.

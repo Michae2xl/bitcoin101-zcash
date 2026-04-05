@@ -1,0 +1,80 @@
+[
+  {
+    "id": "setup-import",
+    "file": "(project entry point)",
+    "line": 0,
+    "category": "import",
+    "severity": "required",
+    "title": "Add ZcashClient import",
+    "description": "Import the generated ZcashClient at the top of your main module.",
+    "beforeCode": "const Bitcoin = require(\"bitcoin-core\");\nconst rpc = new Bitcoin({ port: 18332 });",
+    "afterCode": "const { ZcashClient } = require(\"./zcash-enhancements/zcash_rpc\");\nconst client = new ZcashClient({ zebraPort: 8232, zkoolPort: 8000 });\n// const accountId = await client.wallet.createAccount(\"main\", seed, 7);",
+    "notes": "This replaces the Bitcoin RPC connection with ZcashClient (zebrad + zkool).",
+    "autoApplicable": false
+  },
+  {
+    "id": "setup-config",
+    "file": ".env",
+    "line": 0,
+    "category": "config",
+    "severity": "required",
+    "title": "Configure Zcash node connection",
+    "description": "Set zebrad and zkool connection details.",
+    "beforeCode": "# No Zcash config exists",
+    "afterCode": "ZEBRA_HOST=127.0.0.1\nZEBRA_PORT=8232\nZKOOL_HOST=127.0.0.1\nZKOOL_PORT=8000",
+    "notes": "Adjust host/port if your nodes are remote. zebrad = chain data, zkool = wallet operations.",
+    "autoApplicable": true
+  },
+  {
+    "id": "rpc-src-simplewallet-js-getbalance-18",
+    "file": "src/simplewallet.js",
+    "line": 18,
+    "category": "rpc-shielded",
+    "severity": "required",
+    "title": "getbalance → z_gettotalbalance",
+    "description": "Returns {transparent, private, total}. Use 'private' for shielded balance.",
+    "beforeCode": "getBalance() {",
+    "afterCode": "// Shielded balance (transparent + sapling + orchard)\nconst balance = await client.wallet.getBalance(accountId);\n// balance = { transparent, sapling, orchard, total }",
+    "notes": "This call changes behavior — uses shielded pool with zk-SNARK proofs.",
+    "autoApplicable": false
+  },
+  {
+    "id": "rpc-src-webapi-js-getblock-32",
+    "file": "src/webapi.js",
+    "line": 32,
+    "category": "rpc-compatible",
+    "severity": "optional",
+    "title": "getblock → getblock",
+    "description": "Same RPC — works identically.",
+    "beforeCode": "getBlock(id) {",
+    "afterCode": "// Same RPC — works on zebrad identically\nconst block = await client.chain.getblock(hashOrHeight, 1);",
+    "notes": "Compatible — works the same on zebrad. No changes required.",
+    "autoApplicable": true
+  },
+  {
+    "id": "rpc-src-webapi-js-getbalance-48",
+    "file": "src/webapi.js",
+    "line": 48,
+    "category": "rpc-shielded",
+    "severity": "required",
+    "title": "getbalance → z_gettotalbalance",
+    "description": "Returns {transparent, private, total}. Use 'private' for shielded balance.",
+    "beforeCode": "getBalance(addr) {",
+    "afterCode": "// Shielded balance (transparent + sapling + orchard)\nconst balance = await client.wallet.getBalance(accountId);\n// balance = { transparent, sapling, orchard, total }",
+    "notes": "This call changes behavior — uses shielded pool with zk-SNARK proofs.",
+    "autoApplicable": false
+  },
+  {
+    "id": "rpc-static-scripts-wallet-js-getbalance-40",
+    "file": "static/scripts/wallet.js",
+    "line": 40,
+    "category": "rpc-shielded",
+    "severity": "required",
+    "title": "getbalance → z_gettotalbalance",
+    "description": "Returns {transparent, private, total}. Use 'private' for shielded balance.",
+    "beforeCode": "bitcoin.getBalance().then(function(balance) {",
+    "afterCode": "// Shielded balance (transparent + sapling + orchard)\nconst balance = await client.wallet.getBalance(accountId);\n// balance = { transparent, sapling, orchard, total }",
+    "notes": "This call changes behavior — uses shielded pool with zk-SNARK proofs.",
+    "autoApplicable": false
+  }
+]

@@ -15,35 +15,8 @@
         font-family: -apple-system, system-ui, sans-serif;
         background: #0a0a12;
         color: #e0e0e0;
-        min-height: 100vh;
-        overflow-x: hidden;
-        cursor: none;
-      }
-
-      /* ── Custom Cursor ── */
-      .custom-cursor {
-        position: fixed;
-        width: 12px;
-        height: 12px;
-        background: #f5b919;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9999;
-        mix-blend-mode: screen;
-        transition: transform 0.1s ease;
-      }
-
-      /* ── Cursor Trail ── */
-      .cursor-trail {
-        position: fixed;
-        width: 6px;
-        height: 6px;
-        background: #f5b919;
-        border-radius: 50%;
-        pointer-events: none;
-        z-index: 9998;
-        opacity: 0;
-        transition: opacity 0.4s ease;
+        height: 100vh;
+        overflow: hidden;
       }
 
       /* ── Particle Background ── */
@@ -63,7 +36,7 @@
         z-index: 10;
         display: flex;
         align-items: center;
-        padding: 16px 24px;
+        padding: 8px 24px;
         border-bottom: 1px solid rgba(245, 185, 25, 0.08);
         backdrop-filter: blur(12px);
         background: rgba(10, 10, 18, 0.7);
@@ -74,42 +47,48 @@
         gap: 12px;
       }
 
-      /* ── Eyes ── */
-      .eyes-container {
+      /* ── Eyes (Hero Section) ── */
+      .eyes-hero {
         display: flex;
-        gap: 8px;
+        justify-content: center;
         align-items: center;
+        gap: 20px;
+        padding: 14px 0 10px 0;
+        position: relative;
+        z-index: 10;
       }
       .eye {
-        width: 32px;
-        height: 32px;
+        width: 80px;
+        height: 80px;
         background: radial-gradient(circle, #1a1a2e 60%, #0d0d18 100%);
-        border: 2px solid rgba(245, 185, 25, 0.3);
+        border: 3px solid rgba(245, 185, 25, 0.3);
         border-radius: 50%;
         position: relative;
         overflow: hidden;
+        box-shadow:
+          0 0 30px rgba(245, 185, 25, 0.1),
+          inset 0 0 20px rgba(0, 0, 0, 0.5);
       }
       .eye .pupil {
-        width: 10px;
-        height: 10px;
-        background: #f5b919;
+        width: 28px;
+        height: 28px;
+        background: transparent;
         border-radius: 50%;
         position: absolute;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         transition: transform 0.08s ease-out;
-        box-shadow: 0 0 8px rgba(245, 185, 25, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        filter: drop-shadow(0 0 12px rgba(245, 185, 25, 0.8));
       }
-      .eye .pupil::after {
-        content: "";
-        position: absolute;
-        width: 4px;
-        height: 4px;
-        background: #fff;
+      .pupil-logo {
+        width: 100%;
+        height: 100%;
         border-radius: 50%;
-        top: 1px;
-        left: 1px;
+        pointer-events: none;
       }
 
       /* ── Glitch Title ── */
@@ -218,22 +197,30 @@
         box-shadow: 0 0 8px rgba(248, 113, 113, 0.5);
       }
 
-      /* ── Container ── */
-      .container {
-        max-width: 620px;
-        margin: 0 auto;
-        padding: 24px;
+      /* ── Main Layout ── */
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        padding: 12px 20px;
         position: relative;
         z-index: 10;
+        height: calc(100vh - 140px);
+        overflow: hidden;
+      }
+      .col {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        overflow: hidden;
       }
 
       /* ── Card with 3D tilt ── */
       .card {
         background: rgba(13, 13, 24, 0.8);
         border: 1px solid rgba(245, 185, 25, 0.06);
-        border-radius: 16px;
-        padding: 28px;
-        margin-bottom: 20px;
+        border-radius: 12px;
+        padding: 16px;
         position: relative;
         overflow: hidden;
         backdrop-filter: blur(8px);
@@ -243,6 +230,8 @@
           box-shadow 0.15s ease-out,
           border-color 0.3s;
         will-change: transform;
+        flex: 1;
+        min-height: 0;
       }
       .card::before {
         content: "";
@@ -268,9 +257,9 @@
         z-index: 1;
       }
       .card h2 {
-        font-size: 12px;
+        font-size: 10px;
         color: #666;
-        margin-bottom: 18px;
+        margin-bottom: 10px;
         text-transform: uppercase;
         letter-spacing: 2px;
       }
@@ -278,15 +267,15 @@
       /* ── Shield Icon ── */
       .shield-icon {
         position: fixed;
-        bottom: 40px;
-        left: 40px;
+        bottom: 20px;
+        left: 20px;
         z-index: 5;
         opacity: 0.12;
         pointer-events: none;
       }
       .shield-icon svg {
-        width: 120px;
-        height: 140px;
+        width: 80px;
+        height: 100px;
         filter: drop-shadow(0 0 30px rgba(245, 185, 25, 0.3));
         animation: shield-pulse 4s ease-in-out infinite;
       }
@@ -308,8 +297,8 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 300px;
-        height: 300px;
+        width: 200px;
+        height: 200px;
         z-index: 0;
         pointer-events: none;
       }
@@ -351,11 +340,11 @@
       /* ── Balance ── */
       .balance-display {
         text-align: center;
-        padding: 24px 0;
+        padding: 8px 0;
         position: relative;
       }
       .balance-amount {
-        font-size: 52px;
+        font-size: 36px;
         font-weight: 800;
         color: #f5b919;
         font-variant-numeric: tabular-nums;
@@ -382,23 +371,23 @@
         }
       }
       .balance-label {
-        font-size: 12px;
+        font-size: 10px;
         color: #555;
-        margin-top: 8px;
+        margin-top: 4px;
         letter-spacing: 2px;
         text-transform: uppercase;
       }
       .balance-pools {
         display: flex;
-        gap: 16px;
+        gap: 10px;
         justify-content: center;
-        margin-top: 20px;
+        margin-top: 10px;
       }
       .pool {
         text-align: center;
-        padding: 10px 18px;
+        padding: 6px 12px;
         background: rgba(18, 18, 31, 0.6);
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid rgba(245, 185, 25, 0.05);
         transition:
           border-color 0.3s,
@@ -409,14 +398,14 @@
         background: rgba(18, 18, 31, 0.9);
       }
       .pool .amount {
-        font-size: 16px;
+        font-size: 13px;
         font-weight: 700;
         color: #ccc;
       }
       .pool .name {
-        font-size: 10px;
+        font-size: 9px;
         color: #555;
-        margin-top: 4px;
+        margin-top: 2px;
         letter-spacing: 1px;
       }
 
@@ -424,11 +413,11 @@
       .address-box {
         background: rgba(8, 8, 15, 0.8);
         border: 1px solid rgba(245, 185, 25, 0.3);
-        border-radius: 10px;
-        padding: 14px;
+        border-radius: 8px;
+        padding: 8px 10px;
         word-break: break-all;
         font-family: "SF Mono", "Fira Code", monospace;
-        font-size: 11px;
+        font-size: 9px;
         color: #f5b919;
         cursor: pointer;
         position: relative;
@@ -460,9 +449,9 @@
       }
       .address-box .copy-hint {
         position: absolute;
-        top: 6px;
-        right: 10px;
-        font-size: 9px;
+        top: 4px;
+        right: 8px;
+        font-size: 8px;
         color: #444;
         font-family: sans-serif;
         transition: color 0.3s;
@@ -471,19 +460,19 @@
         color: #888;
       }
       .address-label {
-        font-size: 11px;
+        font-size: 10px;
         color: #555;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
       }
       .address-label .tag {
         background: rgba(26, 58, 26, 0.8);
         color: #4ade80;
-        padding: 2px 8px;
+        padding: 1px 6px;
         border-radius: 4px;
-        font-size: 9px;
+        font-size: 8px;
         font-weight: 700;
         letter-spacing: 0.5px;
       }
@@ -492,25 +481,25 @@
       .send-form {
         display: flex;
         flex-direction: column;
-        gap: 14px;
+        gap: 8px;
       }
       .send-form label {
-        font-size: 10px;
+        font-size: 9px;
         color: #666;
         text-transform: uppercase;
         letter-spacing: 1.5px;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         display: block;
       }
       .send-form input,
       .send-form textarea {
         background: rgba(8, 8, 15, 0.8);
         border: 1px solid rgba(26, 26, 46, 0.8);
-        border-radius: 10px;
-        padding: 12px 14px;
+        border-radius: 8px;
+        padding: 8px 10px;
         color: #e0e0e0;
         font-family: "SF Mono", "Fira Code", monospace;
-        font-size: 13px;
+        font-size: 12px;
         outline: none;
         transition:
           border-color 0.3s,
@@ -524,15 +513,15 @@
       }
       .send-form textarea {
         resize: none;
-        height: 64px;
+        height: 44px;
       }
 
       /* ── Buttons ── */
       .btn {
-        padding: 14px 24px;
+        padding: 10px 18px;
         border: none;
-        border-radius: 10px;
-        font-size: 14px;
+        border-radius: 8px;
+        font-size: 12px;
         font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
@@ -628,12 +617,12 @@
       .tabs {
         display: flex;
         gap: 4px;
-        margin-bottom: 18px;
+        margin-bottom: 10px;
       }
       .tab {
-        padding: 8px 18px;
-        border-radius: 8px;
-        font-size: 12px;
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 11px;
         font-weight: 600;
         cursor: pointer;
         background: transparent;
@@ -651,19 +640,22 @@
         border-color: transparent;
       }
 
-      .tx-list {
+      .tx-list,
+      .notes-list {
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
+        overflow-y: auto;
+        max-height: calc(100vh - 340px);
       }
       .tx-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 12px 14px;
+        padding: 8px 10px;
         background: rgba(8, 8, 15, 0.6);
-        border-radius: 10px;
-        font-size: 12px;
+        border-radius: 8px;
+        font-size: 11px;
         border: 1px solid transparent;
         transition: all 0.3s;
       }
@@ -674,7 +666,7 @@
       .tx-item .txid {
         font-family: "SF Mono", "Fira Code", monospace;
         color: #555;
-        max-width: 200px;
+        max-width: 160px;
         overflow: hidden;
         text-overflow: ellipsis;
       }
@@ -689,18 +681,13 @@
         color: #f87171;
       }
 
-      .notes-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
       .note-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 10px 14px;
+        padding: 6px 10px;
         background: rgba(8, 8, 15, 0.6);
-        border-radius: 10px;
+        border-radius: 8px;
         border: 1px solid transparent;
         transition: all 0.3s;
       }
@@ -708,9 +695,9 @@
         border-color: rgba(245, 185, 25, 0.08);
       }
       .note-item .pool-tag {
-        font-size: 10px;
-        padding: 3px 10px;
-        border-radius: 6px;
+        font-size: 9px;
+        padding: 2px 8px;
+        border-radius: 5px;
         font-weight: 700;
         letter-spacing: 0.5px;
       }
@@ -728,14 +715,14 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 10px;
-        padding: 24px;
+        gap: 8px;
+        padding: 16px;
         color: #444;
-        font-size: 13px;
+        font-size: 12px;
       }
       .spinner {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
         border: 2px solid #222;
         border-top-color: #f5b919;
         border-radius: 50%;
@@ -755,9 +742,9 @@
         background: rgba(26, 58, 26, 0.9);
         border: 1px solid #4ade80;
         color: #4ade80;
-        padding: 14px 24px;
-        border-radius: 12px;
-        font-size: 13px;
+        padding: 12px 20px;
+        border-radius: 10px;
+        font-size: 12px;
         display: none;
         z-index: 2000;
         backdrop-filter: blur(12px);
@@ -785,7 +772,7 @@
 
       /* ── Scrollbar ── */
       ::-webkit-scrollbar {
-        width: 6px;
+        width: 4px;
       }
       ::-webkit-scrollbar-track {
         background: transparent;
@@ -800,12 +787,6 @@
     </style>
   </head>
   <body>
-    <!-- Custom Cursor -->
-    <div class="custom-cursor" id="custom-cursor"></div>
-
-    <!-- Cursor Trail -->
-    <div id="cursor-trail-container"></div>
-
     <!-- Particle Background -->
     <canvas class="particles-canvas" id="particles"></canvas>
 
@@ -835,14 +816,6 @@
     <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
-        <div class="eyes-container">
-          <div class="eye" id="eye-left">
-            <div class="pupil" id="pupil-left"></div>
-          </div>
-          <div class="eye" id="eye-right">
-            <div class="pupil" id="pupil-right"></div>
-          </div>
-        </div>
         <span class="glitch-title" data-text="Zcash Wallet" id="glitch-title"
           >Zcash Wallet</span
         >
@@ -852,84 +825,118 @@
       </div>
     </nav>
 
-    <div class="container">
-      <!-- Balance -->
-      <div class="card" data-tilt>
-        <div class="balance-display" id="balance-section">
-          <div class="blob-container">
-            <div class="morphing-blob"></div>
-          </div>
-          <div class="loading">
-            <div class="spinner"></div>
-            Loading...
-          </div>
+    <!-- Eyes Hero Section -->
+    <div class="eyes-hero">
+      <div class="eye" id="eye-left">
+        <div class="pupil" id="pupil-left">
+          <img
+            src="/zcash.svg"
+            alt="Z"
+            class="pupil-logo"
+            onerror="this.style.display = 'none'"
+          />
         </div>
       </div>
-
-      <!-- Addresses -->
-      <div class="card" data-tilt>
-        <h2>Receive</h2>
-        <div id="addresses-section">
-          <div class="loading">
-            <div class="spinner"></div>
-            Loading addresses...
-          </div>
+      <div class="eye" id="eye-right">
+        <div class="pupil" id="pupil-right">
+          <img
+            src="/zcash.svg"
+            alt="Z"
+            class="pupil-logo"
+            onerror="this.style.display = 'none'"
+          />
         </div>
       </div>
+    </div>
 
-      <!-- Send -->
-      <div class="card" data-tilt>
-        <h2>Send (Shielded)</h2>
-        <div class="send-form">
-          <div>
-            <label>To Address</label>
-            <input
-              type="text"
-              id="send-to"
-              placeholder="u1... or zs1... or t1..."
-            />
+    <!-- Main Two-Column Layout -->
+    <div class="main-grid">
+      <!-- Left Column: Balance + Addresses -->
+      <div class="col">
+        <!-- Balance -->
+        <div class="card" data-tilt>
+          <div class="balance-display" id="balance-section">
+            <div class="blob-container">
+              <div class="morphing-blob"></div>
+            </div>
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
           </div>
-          <div>
-            <label>Amount (ZEC)</label>
-            <input type="text" id="send-amount" placeholder="0.001" />
-          </div>
-          <div>
-            <label>Encrypted Memo (optional)</label>
-            <textarea
-              id="send-memo"
-              placeholder="Only the recipient can read this..."
-            ></textarea>
-          </div>
-          <button
-            class="btn btn-primary"
-            id="send-btn"
-            onclick="sendShielded()"
+        </div>
+
+        <!-- Addresses -->
+        <div class="card" data-tilt>
+          <h2>Receive</h2>
+          <div
+            id="addresses-section"
+            style="overflow-y: auto; max-height: calc(100vh - 420px)"
           >
-            Send via Orchard (Halo2)
-          </button>
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading addresses...
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Notes & Transactions -->
-      <div class="card" data-tilt>
-        <div class="tabs">
-          <button class="tab active" onclick="showTab('notes', this)">
-            Shielded Notes
-          </button>
-          <button class="tab" onclick="showTab('txs', this)">
-            Transactions
-          </button>
-        </div>
-        <div id="notes-tab">
-          <div class="loading">
-            <div class="spinner"></div>
-            Loading...
+      <!-- Right Column: Send + Notes/Transactions -->
+      <div class="col">
+        <!-- Send -->
+        <div class="card" data-tilt>
+          <h2>Send (Shielded)</h2>
+          <div class="send-form">
+            <div>
+              <label>To Address</label>
+              <input
+                type="text"
+                id="send-to"
+                placeholder="u1... or zs1... or t1..."
+              />
+            </div>
+            <div>
+              <label>Amount (ZEC)</label>
+              <input type="text" id="send-amount" placeholder="0.001" />
+            </div>
+            <div>
+              <label>Encrypted Memo (optional)</label>
+              <textarea
+                id="send-memo"
+                placeholder="Only the recipient can read this..."
+              ></textarea>
+            </div>
+            <button
+              class="btn btn-primary"
+              id="send-btn"
+              onclick="sendShielded()"
+            >
+              Send via Orchard (Halo2)
+            </button>
           </div>
         </div>
-        <div id="txs-tab" style="display: none">
-          <div class="loading">
-            <div class="spinner"></div>
-            Loading...
+
+        <!-- Notes & Transactions -->
+        <div class="card" data-tilt>
+          <div class="tabs">
+            <button class="tab active" onclick="showTab('notes', this)">
+              Shielded Notes
+            </button>
+            <button class="tab" onclick="showTab('txs', this)">
+              Transactions
+            </button>
+          </div>
+          <div id="notes-tab">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
+          </div>
+          <div id="txs-tab" style="display: none">
+            <div class="loading">
+              <div class="spinner"></div>
+              Loading...
+            </div>
           </div>
         </div>
       </div>
@@ -990,44 +997,11 @@
         draw();
       })();
 
-      // ── Custom Cursor & Trail ──
-      const cursorEl = document.getElementById("custom-cursor");
-      const trailContainer = document.getElementById("cursor-trail-container");
-      const TRAIL_COUNT = 12;
-      const trailDots = [];
-
-      for (let i = 0; i < TRAIL_COUNT; i++) {
-        const dot = document.createElement("div");
-        dot.className = "cursor-trail";
-        trailContainer.appendChild(dot);
-        trailDots.push({ el: dot, x: 0, y: 0 });
-      }
-
+      // ── Mouse Tracking ──
       document.addEventListener("mousemove", (e) => {
         mouseX = e.clientX;
         mouseY = e.clientY;
       });
-
-      (function animateCursor() {
-        cursorEl.style.left = mouseX - 6 + "px";
-        cursorEl.style.top = mouseY - 6 + "px";
-
-        let prevX = mouseX,
-          prevY = mouseY;
-        for (let i = 0; i < trailDots.length; i++) {
-          const d = trailDots[i];
-          d.x += (prevX - d.x) * 0.3;
-          d.y += (prevY - d.y) * 0.3;
-          d.el.style.left = d.x - 3 + "px";
-          d.el.style.top = d.y - 3 + "px";
-          const dist = Math.hypot(mouseX - d.x, mouseY - d.y);
-          d.el.style.opacity = Math.min(0.4, dist * 0.01);
-          prevX = d.x;
-          prevY = d.y;
-        }
-
-        requestAnimationFrame(animateCursor);
-      })();
 
       // ── Eyes Follow Mouse ──
       function updateEyes() {
@@ -1049,7 +1023,7 @@
           const dx = mouseX - cx;
           const dy = mouseY - cy;
           const angle = Math.atan2(dy, dx);
-          const dist = Math.min(6, Math.hypot(dx, dy) * 0.02);
+          const dist = Math.min(18, Math.hypot(dx, dy) * 0.02);
           const px = Math.cos(angle) * dist;
           const py = Math.sin(angle) * dist;
           pupil.style.transform = `translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`;
@@ -1253,7 +1227,7 @@
           let html = "";
           if (addrs.ua) {
             html +=
-              '<div style="margin-bottom:14px"><div class="address-label">Unified Address <span class="tag">RECOMMENDED</span></div>';
+              '<div style="margin-bottom:8px"><div class="address-label">Unified Address <span class="tag">RECOMMENDED</span></div>';
             html +=
               '<div class="address-box" data-addr="' +
               addrs.ua +
@@ -1263,7 +1237,7 @@
           }
           if (addrs.orchard) {
             html +=
-              '<div style="margin-bottom:14px"><div class="address-label">Orchard <span class="tag">HALO2</span></div>';
+              '<div style="margin-bottom:8px"><div class="address-label">Orchard <span class="tag">HALO2</span></div>';
             html +=
               '<div class="address-box" data-addr="' +
               addrs.orchard +
@@ -1281,7 +1255,7 @@
               '</span><span class="copy-hint">click to copy</span></div></div>';
           }
           html +=
-            '<button class="btn btn-secondary" style="margin-top:14px;width:100%" onclick="newAddresses()">Generate New Addresses</button>';
+            '<button class="btn btn-secondary" style="margin-top:8px;width:100%" onclick="newAddresses()">Generate New Addresses</button>';
           document.getElementById("addresses-section").innerHTML = html;
         } catch {
           document.getElementById("addresses-section").innerHTML =
@@ -1296,7 +1270,7 @@
           );
           if (!notes.length) {
             document.getElementById("notes-tab").innerHTML =
-              '<div style="color:#333;text-align:center;padding:24px;font-size:13px">No shielded notes yet</div>';
+              '<div style="color:#333;text-align:center;padding:16px;font-size:12px">No shielded notes yet</div>';
             return;
           }
           let html = '<div class="notes-list">';
@@ -1304,7 +1278,7 @@
             const pool = n.pool === 2 ? "orchard" : "sapling";
             html += `<div class="note-item">
               <span class="pool-tag ${pool}">${pool.toUpperCase()}</span>
-              <span style="font-family:'SF Mono',monospace;font-size:14px;font-weight:700">${parseFloat(n.value).toFixed(4)} ZEC</span>
+              <span style="font-family:'SF Mono',monospace;font-size:12px;font-weight:700">${parseFloat(n.value).toFixed(4)} ZEC</span>
             </div>`;
           }
           html += "</div>";
@@ -1322,7 +1296,7 @@
           );
           if (!txs.length) {
             document.getElementById("txs-tab").innerHTML =
-              '<div style="color:#333;text-align:center;padding:24px;font-size:13px">No transactions yet</div>';
+              '<div style="color:#333;text-align:center;padding:16px;font-size:12px">No transactions yet</div>';
             return;
           }
           let html = '<div class="tx-list">';
@@ -1330,7 +1304,7 @@
             const val = parseFloat(tx.value);
             const cls = val >= 0 ? "positive" : "negative";
             html += `<div class="tx-item">
-              <div><div class="txid">${tx.txid}</div><div style="font-size:10px;color:#333;margin-top:2px">Block ${tx.height}</div></div>
+              <div><div class="txid">${tx.txid}</div><div style="font-size:9px;color:#333;margin-top:2px">Block ${tx.height}</div></div>
               <div class="value ${cls}">${val >= 0 ? "+" : ""}${val.toFixed(4)} ZEC</div>
             </div>`;
           }
@@ -1409,22 +1383,6 @@
         btn.disabled = false;
         btn.textContent = "Send via Orchard (Halo2)";
       }
-
-      // Restore normal cursor on interactive elements
-      const interactiveSelector =
-        "a, button, input, textarea, .address-box, .tab, .btn, [onclick]";
-      document.addEventListener("mouseover", (e) => {
-        if (e.target.closest(interactiveSelector)) {
-          cursorEl.style.transform = "scale(1.5)";
-          cursorEl.style.mixBlendMode = "difference";
-        }
-      });
-      document.addEventListener("mouseout", (e) => {
-        if (e.target.closest(interactiveSelector)) {
-          cursorEl.style.transform = "scale(1)";
-          cursorEl.style.mixBlendMode = "screen";
-        }
-      });
 
       init();
     </script>

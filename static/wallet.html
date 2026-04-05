@@ -621,7 +621,7 @@
         margin-right: 4px;
         user-select: none;
       }
-      .address-box .copy-hint {
+      .address-box .copy-hint { display: none !important;
         position: absolute;
         top: 4px;
         right: 8px;
@@ -1654,7 +1654,7 @@
               addrs.ua +
               '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix">ᙇ</span><span class="addr-text">' +
               addrs.ua +
-              '</span><span class="copy-hint">CLICK TO COPY</span><div class="addr-tooltip">' +
+              '</span><div class="addr-tooltip">' +
               addrs.ua +
               "</div></div></div>";
           }
@@ -1666,7 +1666,7 @@
               addrs.orchard +
               '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix">ᙇ</span><span class="addr-text">' +
               addrs.orchard +
-              '</span><span class="copy-hint">CLICK TO COPY</span><div class="addr-tooltip">' +
+              '</span><div class="addr-tooltip">' +
               addrs.orchard +
               "</div></div></div>";
           }
@@ -1678,7 +1678,7 @@
               addrs.transparent +
               '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix" style="color:#555">ᙇ</span><span class="addr-text">' +
               addrs.transparent +
-              '</span><span class="copy-hint">CLICK TO COPY</span><div class="addr-tooltip">' +
+              '</span><div class="addr-tooltip">' +
               addrs.transparent +
               "</div></div></div>";
           }

@@ -1584,25 +1584,32 @@
               <div class="pool"><div class="amount"><span class="pool-dot sapling"></span>${sapling.toFixed(4)}</div><div class="name">SAPLING</div></div>
               <div class="pool"><div class="amount"><span class="pool-dot transparent"></span>${transparent.toFixed(4)}</div><div class="name">TRANSPARENT</div></div>
             </div>
-            <div style="margin-top:12px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
-              <div style="text-align:center;padding:6px 14px;border:1px solid #1a1a2e;flex:1;min-width:120px">
-                <div style="font-size:11px;color:#00ff41;font-weight:700">HALO2</div>
-                <div style="font-size:9px;color:#444;margin-top:2px">PROOF SYSTEM</div>
-              </div>
-              <div style="text-align:center;padding:6px 14px;border:1px solid #1a1a2e;flex:1;min-width:120px">
-                <div style="font-size:11px;color:#F5B919;font-weight:700">ORCHARD</div>
-                <div style="font-size:9px;color:#444;margin-top:2px">SHIELDED POOL</div>
-              </div>
-              <div style="text-align:center;padding:6px 14px;border:1px solid #1a1a2e;flex:1;min-width:120px">
-                <div style="font-size:11px;color:#ccc;font-weight:700">NO TRUSTED SETUP</div>
-                <div style="font-size:9px;color:#444;margin-top:2px">ZK-SNARK</div>
-              </div>
+            <div style="margin-top:14px;display:flex;gap:8px;justify-content:center">
+              <div style="font-size:10px;color:#444;font-family:monospace">BLOCK <span style="color:#00ff41" id="bal-block">---</span></div>
+              <div style="color:#222">|</div>
+              <div style="font-size:10px;color:#444;font-family:monospace">ORCHARD POOL <span style="color:#F5B919" id="bal-orchard-pool">---</span> ZEC</div>
+              <div style="color:#222">|</div>
+              <div style="font-size:10px;color:#444;font-family:monospace">NU <span style="color:#888" id="bal-nu">6.1</span></div>
             </div>
           `;
           cascadeDigits(
             document.getElementById("balance-digits"),
             total.toFixed(4),
           );
+          // Fill chain data in balance card
+          try {
+            const chain = await fetch("/api/chain").then((r) => r.json());
+            const bEl = document.getElementById("bal-block");
+            const oEl = document.getElementById("bal-orchard-pool");
+            if (bEl)
+              bEl.textContent = chain.blocks
+                ? chain.blocks.toLocaleString()
+                : "---";
+            if (oEl)
+              oEl.textContent = chain.orchard
+                ? (chain.orchard / 1000000).toFixed(1) + "M"
+                : "---";
+          } catch {}
         } catch {
           document.getElementById("balance-section").innerHTML =
             '<div class="blob-container"><div class="morphing-blob"></div></div><div class="balance-amount">\u2014</div><div class="balance-label">UNABLE TO LOAD</div>';

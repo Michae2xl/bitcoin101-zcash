@@ -7,12 +7,39 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "static")));
 app.get("/", (req, res) => res.redirect("/wallet.html"));
 
-// Zcash client — connects to zebrad + zkool
-const zcash = new ZcashClient({
-  zebraHost: process.env.ZEBRA_HOST || "192.168.0.28",
-  zebraPort: parseInt(process.env.ZEBRA_PORT || "8232"),
-  zkoolHost: process.env.ZKOOL_HOST || "192.168.0.28",
-  zkoolPort: parseInt(process.env.ZKOOL_PORT || "8001"),
+// Zcash clients — mainnet + testnet
+const ZEBRA_HOST = process.env.ZEBRA_HOST || "192.168.0.28";
+const ZKOOL_HOST = process.env.ZKOOL_HOST || "192.168.0.28";
+
+const clients = {
+  testnet: new ZcashClient({
+    zebraHost: ZEBRA_HOST,
+    zebraPort: parseInt(process.env.ZEBRA_PORT || "8232"),
+    zkoolHost: ZKOOL_HOST,
+    zkoolPort: parseInt(process.env.ZKOOL_TESTNET_PORT || "8001"),
+  }),
+  mainnet: new ZcashClient({
+    zebraHost: ZEBRA_HOST,
+    zebraPort: parseInt(process.env.ZEBRA_PORT || "8232"),
+    zkoolHost: ZKOOL_HOST,
+    zkoolPort: parseInt(process.env.ZKOOL_MAINNET_PORT || "8000"),
+  }),
+};
+
+let currentNetwork = "testnet";
+let zcash = clients[currentNetwork];
+
+// Network switch
+app.get("/api/network", (req, res) => res.json({ network: currentNetwork }));
+app.post("/api/network", (req, res) => {
+  const { network } = req.body;
+  if (network === "testnet" || network === "mainnet") {
+    currentNetwork = network;
+    zcash = clients[currentNetwork];
+    res.json({ network: currentNetwork, switched: true });
+  } else {
+    res.status(400).json({ error: "Invalid network. Use testnet or mainnet." });
+  }
 });
 
 // --- API endpoints ---

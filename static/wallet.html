@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ZCASH TESTNET WALLET — Orchard/Halo2</title>
+    <title>ZCASH WALLET — Orchard/Halo2</title>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700;800&display=swap");
 
@@ -210,6 +210,33 @@
         }
       }
 
+      .network-toggle {
+        display: flex;
+        gap: 2px;
+        margin-left: 16px;
+        background: #08080f;
+        border: 1px solid #1a1a2e;
+        padding: 2px;
+      }
+      .net-btn {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 5px 12px;
+        border: none;
+        cursor: pointer;
+        background: transparent;
+        color: #444;
+        transition: all 0.2s;
+      }
+      .net-btn:hover {
+        color: #888;
+      }
+      .net-btn.active {
+        background: #f5b919;
+        color: #08080f;
+      }
       .navbar .status {
         margin-left: auto;
         font-size: 13px;
@@ -1054,12 +1081,25 @@
     <!-- Navbar -->
     <nav class="navbar">
       <div class="logo">
-        <span
-          class="glitch-title"
-          data-text="ZCASH TESTNET WALLET"
-          id="glitch-title"
-          >ZCASH TESTNET WALLET</span
+        <span class="glitch-title" data-text="ZCASH WALLET" id="glitch-title"
+          >ZCASH WALLET</span
         >
+      </div>
+      <div class="network-toggle">
+        <button
+          class="net-btn active"
+          id="btn-testnet"
+          onclick="switchNetwork('testnet')"
+        >
+          TESTNET
+        </button>
+        <button
+          class="net-btn"
+          id="btn-mainnet"
+          onclick="switchNetwork('mainnet')"
+        >
+          MAINNET
+        </button>
       </div>
       <div class="status" id="status">
         <span class="dot red"></span> CONNECTING...
@@ -1444,6 +1484,26 @@
         document.getElementById("sb-peers").textContent = blocks
           ? "PEERS: CONNECTED"
           : "PEERS: ---";
+      }
+
+      async function switchNetwork(network) {
+        document
+          .getElementById("btn-testnet")
+          .classList.toggle("active", network === "testnet");
+        document
+          .getElementById("btn-mainnet")
+          .classList.toggle("active", network === "mainnet");
+        try {
+          await fetch("/api/network", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ network }),
+          });
+          showToast("Switched to " + network.toUpperCase());
+          init();
+        } catch (e) {
+          showToast("Switch failed: " + e.message, true);
+        }
       }
 
       async function init() {

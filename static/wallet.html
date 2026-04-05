@@ -1023,25 +1023,6 @@
       .addr-truncated {
         position: relative;
       }
-      .addr-truncated .addr-tooltip {
-        display: none;
-        position: absolute;
-        bottom: 100%;
-        left: 0;
-        background: rgba(8, 8, 15, 0.98);
-        border: 1px solid #f5b919;
-        color: #f5b919;
-        padding: 14px 16px;
-        font-size: 14px;
-        word-break: break-all;
-        max-width: 400px;
-        z-index: 50;
-        font-family: "JetBrains Mono", monospace;
-        margin-bottom: 4px;
-      }
-      .addr-truncated:hover .addr-tooltip {
-        display: block;
-      }
     </style>
   </head>
   <body>
@@ -1641,9 +1622,9 @@
             html +=
               '<div class="address-box addr-truncated" data-addr="' +
               addrs.ua +
-              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix">ᙇ</span><span class="addr-text">' +
+              '" onclick="copyAddr(this)"><span class="address-prefix">ᙇ</span><span class="addr-text">' +
               addrs.ua +
-              '</span><div class="addr-tooltip">' +
+              "" +
               addrs.ua +
               "</div></div></div>";
           }
@@ -1653,9 +1634,9 @@
             html +=
               '<div class="address-box addr-truncated" data-addr="' +
               addrs.orchard +
-              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix">ᙇ</span><span class="addr-text">' +
+              '" onclick="copyAddr(this)"><span class="address-prefix">ᙇ</span><span class="addr-text">' +
               addrs.orchard +
-              '</span><div class="addr-tooltip">' +
+              "" +
               addrs.orchard +
               "</div></div></div>";
           }
@@ -1665,9 +1646,9 @@
             html +=
               '<div class="address-box addr-truncated" style="border-color:#1a1a2e;color:#666" data-addr="' +
               addrs.transparent +
-              '" onclick="copyAddr(this)" onmouseenter="decryptEffect(this)"><span class="address-prefix" style="color:#555">ᙇ</span><span class="addr-text">' +
+              '" onclick="copyAddr(this)"><span class="address-prefix" style="color:#555">ᙇ</span><span class="addr-text">' +
               addrs.transparent +
-              '</span><div class="addr-tooltip">' +
+              "" +
               addrs.transparent +
               "</div></div></div>";
           }
@@ -1736,8 +1717,14 @@
       function copyAddr(el) {
         const text =
           el.getAttribute("data-addr") ||
-          el.textContent.replace("CLICK TO COPY", "").replace("ᙇ", "").trim();
+          el.textContent.replace("ᙇ", "").trim();
         navigator.clipboard.writeText(text);
+        el.style.borderColor = "#00ff41";
+        el.style.boxShadow = "0 0 8px rgba(0,255,65,0.3)";
+        setTimeout(function () {
+          el.style.borderColor = "";
+          el.style.boxShadow = "";
+        }, 600);
       }
 
       async function newAddresses() {

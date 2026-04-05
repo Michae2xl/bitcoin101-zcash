@@ -17,8 +17,8 @@
         font-family: "JetBrains Mono", "SF Mono", "Fira Code", monospace;
         background: #08080f;
         color: #e0e0e0;
-        height: 100vh;
-        overflow: hidden;
+        min-height: 100vh;
+        overflow-x: hidden;
         font-size: 14px;
       }
 
@@ -270,8 +270,7 @@
         padding: 8px 16px;
         position: relative;
         z-index: 10;
-        height: calc(100vh - 130px);
-        overflow: hidden;
+        min-height: calc(100vh - 130px);
       }
       .col {
         display: flex;
@@ -1542,9 +1541,11 @@
 
       async function loadBalance() {
         try {
-          const bal = await fetch("/api/balance/" + accountId).then((r) =>
-            r.json(),
-          );
+          const [bal, net] = await Promise.all([
+            fetch("/api/balance/" + accountId).then((r) => r.json()),
+            fetch("/api/network").then((r) => r.json()),
+          ]);
+          const networkLabel = (net.network || "testnet").toUpperCase();
           const total = parseFloat(bal.total || "0");
           const orchard = parseFloat(bal.orchard || "0");
           const sapling = parseFloat(bal.sapling || "0");
@@ -1559,7 +1560,7 @@
           const section = document.getElementById("balance-section");
           section.innerHTML = `
             <div class="blob-container"><div class="morphing-blob"></div></div>
-            <div class="balance-network">TESTNET // SHIELDED VAULT</div>
+            <div class="balance-network" id="balance-network-label">${networkLabel} // SHIELDED VAULT</div>
             <div class="balance-amount" id="balance-digits"></div>
             <div class="balance-label">ZEC TOTAL BALANCE</div>
             <div class="pool-bars">

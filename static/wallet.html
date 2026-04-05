@@ -581,16 +581,18 @@
         word-break: break-all;
         font-size: 10px;
         line-height: 1.4;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+
+        overflow: visible;
+        word-wrap: break-word;
+
         font-family: "JetBrains Mono", monospace;
         font-size: 14px;
         color: #f5b919;
         cursor: pointer;
         position: relative;
         transition: all 0.3s ease;
-        overflow: hidden;
+        overflow: visible;
+        word-wrap: break-word;
       }
       .address-box::after {
         content: "";
@@ -863,7 +865,7 @@
         color: #444;
         max-width: 160px;
         overflow: hidden;
-        text-overflow: ellipsis;
+
         font-size: 14px;
       }
       .tx-item .value {
@@ -1581,6 +1583,20 @@
               <div class="pool"><div class="amount"><span class="pool-dot orchard"></span>${orchard.toFixed(4)}</div><div class="name">ORCHARD</div></div>
               <div class="pool"><div class="amount"><span class="pool-dot sapling"></span>${sapling.toFixed(4)}</div><div class="name">SAPLING</div></div>
               <div class="pool"><div class="amount"><span class="pool-dot transparent"></span>${transparent.toFixed(4)}</div><div class="name">TRANSPARENT</div></div>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+              <div style="text-align:center;padding:6px 14px;border:1px solid #1a1a2e;flex:1;min-width:120px">
+                <div style="font-size:11px;color:#00ff41;font-weight:700">HALO2</div>
+                <div style="font-size:9px;color:#444;margin-top:2px">PROOF SYSTEM</div>
+              </div>
+              <div style="text-align:center;padding:6px 14px;border:1px solid #1a1a2e;flex:1;min-width:120px">
+                <div style="font-size:11px;color:#F5B919;font-weight:700">ORCHARD</div>
+                <div style="font-size:9px;color:#444;margin-top:2px">SHIELDED POOL</div>
+              </div>
+              <div style="text-align:center;padding:6px 14px;border:1px solid #1a1a2e;flex:1;min-width:120px">
+                <div style="font-size:11px;color:#ccc;font-weight:700">NO TRUSTED SETUP</div>
+                <div style="font-size:9px;color:#444;margin-top:2px">ZK-SNARK</div>
+              </div>
             </div>
           `;
           cascadeDigits(

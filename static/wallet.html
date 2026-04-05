@@ -1749,7 +1749,6 @@
           el.getAttribute("data-addr") ||
           el.textContent.replace("CLICK TO COPY", "").replace("ᙇ", "").trim();
         navigator.clipboard.writeText(text);
-        showToast("ADDRESS COPIED!");
       }
 
       async function newAddresses() {
